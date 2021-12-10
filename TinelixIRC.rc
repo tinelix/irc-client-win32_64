@@ -1,0 +1,358 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+#ifdef _WIN32
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif\r\n"
+    "#include ""res\\TinelixIRC.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\TinelixIRC.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM "Connect...",                  ID_FILE_CONNECT
+        MENUITEM SEPARATOR
+        MENUITEM "Quit",                        ID_FILE_QUIT
+    END
+    POPUP "View"
+    BEGIN
+        MENUITEM "Settings",                    ID_VIEW_SETTINGS
+    END
+    POPUP "Help"
+    BEGIN
+        MENUITEM "About...",                    ID_HELP_ABOUT
+    END
+END
+
+#endif    // Russian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,2,0,0
+ PRODUCTVERSION 0,2,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x21L
+#else
+ FILEFLAGS 0x20L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040004e4"
+        BEGIN
+            VALUE "Comments", "Tinelix IRC Client for Windows (Windows 9x / NT). Version 0.2.0 Beta (2021-12-10). Repository link: https://github.com/tinelix/irc-client-for-windows\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "Tinelix IRC Client for Windows\0"
+            VALUE "FileVersion", "0, 2, 0, 0\0"
+            VALUE "InternalName", "Tinelix IRC Client\0"
+            VALUE "LegalCopyright", "Copyright © 2021 Dmitry Tretyakov (aka. Tinelix). GNU GPL 3.0 licensed\0"
+            VALUE "OriginalFilename", "tlx_irc.exe\0"
+            VALUE "ProductName", "Tinelix IRC Client\0"
+            VALUE "ProductVersion", "0, 2, 0, 0\0"
+            VALUE "SpecialBuild", "0.2.0 Beta (2021-12-10)\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x400, 1252
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_MAINWINDOW, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 286
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 181
+    END
+
+    IDD_IRCCHATPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 254
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 139
+    END
+
+    IDD_CONNMAN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 224
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 152
+    END
+
+    IDD_EDITTEXT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 182
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 51
+    END
+
+    IDD_SETTINGSDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 241
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 70
+    END
+
+    IDD_ABOUTDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 222
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 178
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAINWINDOW DIALOGEX 0, 0, 290, 185
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+CAPTION "Tinelix IRC Client"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CONTROL         "Tab1",IDC_IRC_CHAT_TABS,"SysTabControl32",0x0,4,4,282,
+                    165
+    CONTROL         "Progress1",IDC_CONNECTION_PROGRESS,"msctls_progress32",
+                    WS_BORDER,209,172,43,9,WS_EX_TRANSPARENT
+    RTEXT           "0 ms",IDC_CONNETCTION_UPTIME,256,172,30,9,0,
+                    WS_EX_TRANSPARENT
+    LTEXT           "Ready",IDC_STATUSBAR_TEXT,4,172,203,9,0,
+                    WS_EX_TRANSPARENT
+END
+
+IDD_IRCCHATPAGE DIALOG DISCARDABLE  0, 0, 258, 143
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_SOCKMSGS,4,4,250,119,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_READONLY | WS_VSCROLL
+    EDITTEXT        IDC_MSGTEXT,4,125,216,14,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "Send",IDC_SENDMSG,221,125,33,14,WS_DISABLED
+END
+
+IDD_CONNMAN DIALOG DISCARDABLE  0, 0, 231, 159
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Connection manager"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,131,139,45,14
+    PUSHBUTTON      "Cancel",IDCANCEL,179,139,45,14
+    LTEXT           "Language:",IDC_LANGLABEL,7,9,60,10
+    COMBOBOX        IDC_LANGCOMBO1,69,7,155,66,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Profiles",IDC_PROFILES_GROUP,7,20,217,116
+    LISTBOX         IDC_PROFILELIST,12,32,207,84,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_ADD_PROFILE_BTN,12,119,48,13
+    PUSHBUTTON      "Connect",IDC_CONNECT_PROFILE_BTN,61,119,57,13,
+                    WS_DISABLED
+    PUSHBUTTON      "Change",IDC_CHANGE_PROFILE_BTN,120,119,48,13,
+                    WS_DISABLED
+    PUSHBUTTON      "Delete",IDC_DELETE_PROFILE_BTn,169,119,50,13,
+                    WS_DISABLED
+END
+
+IDD_EDITTEXT DIALOG DISCARDABLE  0, 0, 189, 58
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit the text"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,99,37,41,14
+    PUSHBUTTON      "Cancel",IDCANCEL,142,37,40,14
+    EDITTEXT        IDC_ENTERTEXTEDIT,7,19,175,13,ES_AUTOHSCROLL
+    LTEXT           "Type text here",IDC_ENTERTEXTLABEL,7,7,175,11
+END
+
+IDD_SETTINGSDLG DIALOG DISCARDABLE  0, 0, 245, 74
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,146,56,45,14
+    PUSHBUTTON      "Cancel",IDCANCEL,196,56,45,14
+    LTEXT           "Language:",IDC_LANGLABEL,4,7,75,9
+    COMBOBOX        IDC_LANGCOMBO1,91,4,150,64,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Save messages history",IDC_SAVE_MSG_HISTORY,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,21,160,10
+    PUSHBUTTON      "Change font...",IDC_CHANGE_MSG_FONT,170,19,71,14
+    CTEXT           "(restart required)",IDC_RESTARTREQUIRED,171,34,70,9
+END
+
+IDD_ABOUTDLG DIALOG DISCARDABLE  0, 0, 229, 185
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Tinelix IRC Client"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,18,20
+    DEFPUSHBUTTON   "OK",IDOK,185,164,37,14,WS_GROUP
+    LTEXT           "Tinelix IRC Client 0.2.0 Beta",IDC_APPNAME,31,8,191,8
+    LTEXT           "Copyright © 2021 Dmitry Tretyakov (aka. Tinelix)",
+                    IDC_COPYRIGHT,7,167,164,8
+    LTEXT           "for Windows 9x / NT",IDC_WIN32S_EDITION,31,18,87,9
+    GROUPBOX        "Technical Information",IDC_TECHINFO,7,37,215,27
+    LTEXT           "Windows version:",IDC_WINVER_LABEL,11,50,59,10
+    LTEXT           "n/a",IDC_WINVER,71,50,133,10
+    CTEXT           "(license notification)",IDC_LICENSE_NOTIFICATION,7,68,
+                    215,75
+    RTEXT           "https://github.com/tinelix/irc-client-for-windows",
+                    IDC_GITHUB_REPO_LINK,57,153,165,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_CONNMAN DLGINIT
+BEGIN
+    IDC_LANGCOMBO1, 0x403, 8, 0
+0x6e45, 0x6c67, 0x7369, 0x0068, 
+    IDC_LANGCOMBO1, 0x403, 8, 0
+0x7552, 0x7373, 0x6169, 0x006e, 
+    0
+END
+
+IDD_SETTINGSDLG DLGINIT
+BEGIN
+    IDC_LANGCOMBO1, 0x403, 8, 0
+0x6e45, 0x6c67, 0x7369, 0x0068, 
+    IDC_LANGCOMBO1, 0x403, 8, 0
+0x7552, 0x7373, 0x6169, 0x006e, 
+    0
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif
+#include "res\TinelixIRC.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
