@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=IRCChatPage
+LastClass=MainWindow
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TinelixIRC.h"
@@ -38,7 +38,7 @@ Type=1
 Class=MainWindow
 ControlCount=4
 Control1=IDC_IRC_CHAT_TABS,SysTabControl32,1342177280
-Control2=IDC_CONNECTION_PROGRESS,msctls_progress32,1350565888
+Control2=IDC_CONNECTION_PROGRESS,msctls_progress32,1082130432
 Control3=IDC_CONNETCTION_UPTIME,static,1342308354
 Control4=IDC_STATUSBAR_TEXT,static,1342308352
 
@@ -49,7 +49,7 @@ ImplementationFile=MainWindow.cpp
 BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
-LastObject=IDC_LICENSE_NOTIFICATION
+LastObject=MainWindow
 
 [CLS:IRCChatPage]
 Type=0

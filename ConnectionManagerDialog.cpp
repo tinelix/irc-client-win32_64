@@ -322,9 +322,9 @@ void ConnectionManagerDialog::OnConnectProfileBtn()
 	};
 	params.port = atoi(port);
 	GetDlgItem(IDC_CONNECT_PROFILE_BTN)->EnableWindow(FALSE);
-
 		 
 	mainwin.CreateConnectionThread(params);
+	OnCancel();
 	
 }
 

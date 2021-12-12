@@ -83,7 +83,7 @@ BOOL AboutDialog::OnInitDialog()
 		CString lng_selitemtext_2(language_string);
 		if(lng_selitemtext_2 == "Russian") {
 			SetWindowText("Î ïðîãðàììå Tinelix IRC Client");
-			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("äëÿ Windows 9x è NT");
+			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("äëÿ Win32s");
 			GetDlgItem(IDC_TECHINFO)->SetWindowText("Òåõíè÷åñêàÿ èíôîðìàöèÿ");
 			GetDlgItem(IDC_WINVER_LABEL)->SetWindowText("Âåðñèÿ Windows:");
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("Ýòî ñâîáîäíîå ïðîãðàììíîå îáåñïå÷åíèå ñ"
@@ -92,7 +92,7 @@ BOOL AboutDialog::OnInitDialog()
 			" ÃÀÐÀÍÒÈÉ, ÂÊËÞ×Àß ÊÎÌÌÅÐ×ÅÑÊÓÞ ÖÅÍÍÎÑÒÜ.");			
 		} else {
 			SetWindowText("About Tinelix IRC Client");
-			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("for Windows 9x / NT");
+			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("for Win32s");
 			GetDlgItem(IDC_TECHINFO)->SetWindowText("Technical Information");
 			GetDlgItem(IDC_WINVER_LABEL)->SetWindowText("Windows version:");
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("Windows version:");
@@ -109,7 +109,7 @@ BOOL AboutDialog::OnInitDialog()
 	int winver = GetVersion();
 	sprintf(winver_info, "%d.%d", LOBYTE(LOWORD(winver)), 
 	HIBYTE(LOWORD(winver)));
-	GetDlgItem(IDC_WINVER)->SetWindowText(winver_info);		
+	GetDlgItem(IDC_WINVER)->SetWindowText(winver_info);	
 	
 	CDialog::OnInitDialog();
 	CenterWindow();

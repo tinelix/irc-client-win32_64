@@ -29,8 +29,6 @@ public:
 	//{{AFX_MSG(IRCClient)
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
-public:
-	void IRCClient::delsymbs(char *str, int begin, int lng);
 };
 
 

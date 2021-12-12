@@ -16,7 +16,6 @@
 #include <locale.h>
 #include <afxtempl.h>
 #include <conio.h>
-#include <time.h>
 
 #pragma comment(lib, "wsock32.lib")
 
@@ -80,10 +79,33 @@ BOOL MainWindow::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	char exe_path[MAX_PATH] = {0};
+	char dll_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	TCHAR language_string[MAX_PATH] = {0};
+	
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	GetModuleFileName(NULL, dll_path, MAX_PATH);
+
+	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
+
+	strcat(exe_path, "\\settings.ini");	// add settings filename
+
+	strcat(dll_path, "\\parser.dll");
+
+	GetPrivateProfileString("Main", "Language", "", language_string, MAX_PATH, exe_path);
+
+	CString lng_selitemtext_2(language_string);
+	
 	TC_ITEM tci;
 	tci.mask = TCIF_TEXT;
 	tci.iImage = -1;
-	tci.pszText = "Thread";
+	if(lng_selitemtext_2 == "Russian") {
+		tci.pszText = "Поток";
+	} else {
+		tci.pszText = "Thread";
+	};
 	m_irc_tabs.InsertItem(0, &tci);
 	CRect rcClient, rcWindow;
 
@@ -103,22 +125,9 @@ BOOL MainWindow::OnInitDialog()
 	irc_chat_page->GetDlgItem(IDC_SOCKMSGS)->MoveWindow(2, 2, page_frame_w - 4, page_frame_h - 28);
 	irc_chat_page->GetDlgItem(IDC_MSGTEXT)->MoveWindow(2, page_frame_h - 24, page_frame_w - 72, 22);
 	irc_chat_page->GetDlgItem(IDC_SENDMSG)->MoveWindow(page_frame_w - 68, page_frame_h - 24, 66, 22);
-	char exe_path[MAX_PATH] = {0};
-	char dll_path[MAX_PATH] = {0};
-	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 
-	GetModuleFileName(NULL, exe_path, MAX_PATH);
-	GetModuleFileName(NULL, dll_path, MAX_PATH);
-
-	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
-	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
-
-	strcat(exe_path, "\\settings.ini");	// add settings filename
-
-	strcat(dll_path, "\\parser.dll");
-
-	TRACE("Tinelix IRC Client ver. 0.2.0 (2021-12-10)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
-	"https:/github.com/tinelix/irc-client-for-windows\r\n\r\n");
+	TRACE("Tinelix IRC Client ver. 0.1.3 (2021-12-02)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
+	"https:/github.com/tinelix/irc-client-for-win32s\r\n\r\n");
 
 	char font_string[48] = {0};
 	int font_size = 9;
@@ -137,6 +146,8 @@ BOOL MainWindow::OnInitDialog()
 	IsConnected = FALSE;
 	SetWindowText("Tinelix IRC Client");
 
+	
+
 	if(!(GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3)) {
 		parserLib = (HINSTANCE)malloc(sizeof(HINSTANCE));
 		parserLib = LoadLibrary(dll_path);
@@ -145,7 +156,6 @@ BOOL MainWindow::OnInitDialog()
 		};
 	};
 
-	TCHAR language_string[MAX_PATH] = {0};
 	CMenu* mainmenu;
 
 	WSADATA WSAData;
@@ -154,9 +164,6 @@ BOOL MainWindow::OnInitDialog()
 	int status = (WSAStartup(MAKEWORD(1,1), &WSAData));
 
 	//try {
-		GetPrivateProfileString("Main", "Language", "", language_string, MAX_PATH, exe_path);
-
-		CString lng_selitemtext_2(language_string);
 		if (lng_selitemtext_2 == "Russian") {
 			irc_chat_page->GetDlgItem(IDC_SENDMSG)->SetWindowText("Отправить");
 			if (status == 0) {
@@ -165,11 +172,6 @@ BOOL MainWindow::OnInitDialog()
     		else {
 				MessageBox("WinSock не может быть инициализирован.", "Ошибка", MB_OK|MB_ICONSTOP);
     		};
-			if (GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
-				MessageBox("Обработка строк через библиотеку \"PARSER.DLL\" работает только в Windows NT/9x. Запуск "
-                "данной библотеки в Win32s может привести к вылету программы.", "Ошибка", MB_OK);
-				FreeLibrary(parserLib);
-			};
 			setlocale(LC_ALL, "Russian");
 			mainmenu = (CMenu*)malloc(sizeof(CMenu));
 			mainmenu->m_hMenu = NULL;
@@ -191,6 +193,11 @@ BOOL MainWindow::OnInitDialog()
             mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)view_submenu->m_hMenu, "Вид");
 			mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)help_submenu->m_hMenu, "Справка");
 			SetMenu(mainmenu);
+			free(mainmenu);
+			free(file_submenu);
+			free(view_submenu);
+			free(help_submenu);
+			GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText("Готово");
 		} if (lng_selitemtext_2 == "English") {
 			irc_chat_page->GetDlgItem(IDC_SENDMSG)->SetWindowText("Send");
 			if (status == 0) {
@@ -209,6 +216,8 @@ BOOL MainWindow::OnInitDialog()
 			mainmenu->m_hMenu = NULL;
 			mainmenu->LoadMenu(IDR_MAINMENU);
 			SetMenu(mainmenu);
+			free(mainmenu);
+			GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText("Ready");
 		} if (lng_selitemtext_2 == "") {
 			irc_chat_page->GetDlgItem(IDC_SENDMSG)->SetWindowText("Send");
 			if (status == 0) {
@@ -227,11 +236,11 @@ BOOL MainWindow::OnInitDialog()
 			mainmenu->m_hMenu = NULL;
 			mainmenu->LoadMenu(IDR_MAINMENU);
 			SetMenu(mainmenu);
+			free(mainmenu);
 			WritePrivateProfileString("Main", "Language", "English", exe_path);
 			WritePrivateProfileString("Main", "MsgHistory", "Enabled", exe_path);
+			GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText("Ready");
 		};
-
-
 
 	irc_chat_page->ShowWindow(SW_SHOW);
 	
@@ -266,15 +275,14 @@ void MainWindow::OnSize(UINT nType, int cx, int cy)
 	irc_chat_page->GetDlgItem(IDC_SOCKMSGS)->MoveWindow(2, 2, page_frame_w - 4, page_frame_h - 28);
 	irc_chat_page->GetDlgItem(IDC_MSGTEXT)->MoveWindow(2, page_frame_h - 24, page_frame_w - 72, 22);
 	irc_chat_page->GetDlgItem(IDC_SENDMSG)->MoveWindow(page_frame_w - 68, page_frame_h - 24, 66, 22);
-	AfxGetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->MoveWindow(4, cy - 20, cx - 132, 22);
-	AfxGetMainWnd()->GetDlgItem(IDC_CONNECTION_PROGRESS)->MoveWindow(cx - 128, cy - 22, 72, 18);
-	AfxGetMainWnd()->GetDlgItem(IDC_CONNETCTION_UPTIME)->MoveWindow(cx - 56, cy - 20, 54, 22);
+	AfxGetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->MoveWindow(4, cy - 20, cx - 148, 22);
+	AfxGetMainWnd()->GetDlgItem(IDC_CONNECTION_PROGRESS)->MoveWindow(cx - 144, cy - 22, 72, 18);
+	AfxGetMainWnd()->GetDlgItem(IDC_CONNETCTION_UPTIME)->MoveWindow(cx - 72, cy - 20, 68, 22);
 
 }
 
 void MainWindow::OnDestroy() 
 {
-	delete irc_chat_page;
 	CDialog::OnDestroy();
 	
 }
@@ -319,8 +327,14 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	{
 	  	if(language_string2 == "Russian") {
 			MessageBox("Не указан адрес сервера.", "Ошибка", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Ошибка подключения: Не указан адрес сервера");
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		} else {
 			MessageBox("Not specified server address.", "Error", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Connection error: Not specified server address");
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
 		exit;
 	};
@@ -328,8 +342,14 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	{
 		if(language_string2 == "Russian") {
 			MessageBox("Не указан порт сервера.", "Ошибка", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Ошибка подключения: Не указан порт сервера");
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		} else {
 			MessageBox("Not specified server port.", "Error", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Connection error: Not specified server port");
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
 		exit;
 	};
@@ -343,12 +363,18 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	if (sock == SOCKET_ERROR) {
 		if(language_string2 == "Russian") {
 			char* error_msg;
-			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки: %d", WSAGetLastError());
+			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
 			MessageBox(error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Ошибка подключения: Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		} else {
 			char* error_msg;
-			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
+			sprintf(error_msg, "Could not start WinSock with error code %d", WSAGetLastError());
 			MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", WSAGetLastError());
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
 		exit;
 	};
@@ -356,6 +382,13 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	client_param.sin_family = AF_INET;
 	connecting_msg = "Getting IP address...\n";
 	TRACE0(connecting_msg);
+	char statusbar_text[512];
+	if(language_string2 == "Russian") {
+		sprintf(statusbar_text, "Получение IP-адреса для %s...", server);
+	} else {
+		sprintf(statusbar_text, "Getting IP address for %s...", server);
+	};
+	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 	host = gethostbyname(server);
 	if (host) {
 		client_param.sin_addr.s_addr = inet_addr((char*)inet_ntoa(**(in_addr**)host->h_addr_list));
@@ -364,25 +397,43 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	{
 		if(language_string2 == "Russian") {
 			MessageBox("Не удалось получить IP-адрес для этого имени хоста.", "Ошибка", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Ошибка подключения: Не удалось получить IP-адрес для этого имени хоста");
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		} else {
 			MessageBox("Failed to get the IP address for this hostname.", "Error", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Connection error: Failed to get the IP address for this hostname");
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
 		exit;
 	};
 	client_param.sin_port = htons(port);
 	connecting_msg = "Connecting...\n";
+	if(language_string2 == "Russian") {
+		sprintf(statusbar_text, "Подключение к %s:%d...", server, port);
+	} else {
+		sprintf(statusbar_text, "Connecting to %s:%d...", server, port);
+	};
+	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 	TRACE(connecting_msg);
 	int status;
 	status = connect(sock, (SOCKADDR*)&client_param, sizeof(client_param));
 	if (status == SOCKET_ERROR || status == INVALID_SOCKET) {
 		if(language_string2 == "Russian") {
 			char* error_msg;
-			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки: %d", WSAGetLastError());
+			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
 			MessageBox(error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Ошибка подключения: Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		} else {
 			char* error_msg;
-			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
+			sprintf(error_msg, "Could not start WinSock with error code %d", WSAGetLastError());
 			MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", WSAGetLastError());
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
 		exit;
 	};
@@ -497,12 +548,18 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	if (WSAAsync > 0) {
 		if(language_string2 == "Russian") {
 			char* error_msg;
-			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки: %d", WSAGetLastError());
+			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
 			MessageBox(error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Ошибка подключения: Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		} else {
 			char* error_msg;
-			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
+			sprintf(error_msg, "Could not start WinSock with error code %d", WSAGetLastError());
 			MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
+			char statusbar_text[512];
+			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", WSAGetLastError());
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
 	};
 	char ident_sending[400];
@@ -517,6 +574,12 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	nick_sending_parts = sprintf(nick_sending, "NICK %s\n", params.nickname);
 	mainwin->irc_chat_page->GetDlgItem(IDC_MSGTEXT)->EnableWindow(TRUE);
 	status = send(sock, nick_sending, strlen(nick_sending), 0);
+	if(language_string2 == "Russian") {
+		sprintf(statusbar_text, "Готово");
+	} else {
+		sprintf(statusbar_text, "Ready");
+	};
+	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 
 }
 
@@ -615,12 +678,25 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					if (new_line_splitter[i].Left(4) == "PING") {
 						int pong_index;
 						sprintf(pong_msg, "PONG %s\r\n", new_line_splitter[i].Right(strlen(new_line_splitter[i]) - 5));
-						char ping_time[12];
-						clock_t until_ping = clock();
+						time_t until_ping, after_ping;
+						until_ping = clock();
 						status = send((SOCKET)wParam, pong_msg, strlen(pong_msg), 0);
-						clock_t after_ping = clock();
-						sprintf(ping_time, "%.2f ms", (double)(after_ping - until_ping));
-						GetDlgItem(IDC_CONNETCTION_UPTIME)->SetWindowText(ping_time);
+						after_ping = clock();
+						double after_ping_ms = 1000.0 * after_ping;
+						double until_ping_ms = 1000.0 * until_ping;
+						char ping_time[20];
+						double ping_time_ms = (double)(after_ping_ms - until_ping_ms) / CLOCKS_PER_SEC;
+						TRACE("[%lf]\r\n", ping_time_ms);
+						sprintf(ping_time, "%.2f ms", ping_time_ms);
+						if(ping_time_ms > 0.000) {
+							GetDlgItem(IDC_CONNETCTION_UPTIME)->SetWindowText(ping_time);
+						} else {
+							if(lng_selitemtext == "Russian") {
+								GetDlgItem(IDC_CONNETCTION_UPTIME)->SetWindowText("(Нет данных)");
+							} else {
+								GetDlgItem(IDC_CONNETCTION_UPTIME)->SetWindowText("(No data)");
+							}
+						}
 						pong = pong_msg;
 						i = new_line_splitter.GetSize();
 					} else {
@@ -647,7 +723,6 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 								CString p_msg(parsed_msg);
 								//TRACE("OUTPUT: %s\r\n", parsed_msg);
 								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
-								
 							} catch(...) {
 
 							};
@@ -689,8 +764,10 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 BOOL MainWindow::DestroyWindow() 
 {
-	// TODO: Add your specialized code here and/or call the base class
-	
+	closesocket(sock);
+	WSACleanup();
+	FreeLibrary(parserLib);
+	delete irc_chat_page;
 	return CDialog::DestroyWindow();
 }
 
