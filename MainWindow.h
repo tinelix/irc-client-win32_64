@@ -7,9 +7,11 @@
 #define WM_SOCKET_MESSAGE 0xAFFF
 #define WM_SENDING_SOCKET_MESSAGE 0xAFFE
 #define WM_CHANGING_MSGFONT 0xAFFD
+#define WM_UPDATING_STATISTICS 0xAFFC
 #define WM_SOCKET_TIMER 1;
 
 #include "IRCChatPage.h"
+#include "StatisticsDialog.h"
 
 class MainWindow : public CDialog
 {
@@ -37,6 +39,7 @@ public:
 // Implementation
 protected:
 	IRCChatPage* irc_chat_page;
+	StatisticsDialog* stats_dlg;
 	CFont font;
 	CFont mainfont;
 
@@ -48,6 +51,9 @@ protected:
 	afx_msg void OnFileConnect();
 	afx_msg void OnViewSettings();
 	afx_msg void OnHelpAbout();
+	afx_msg void OnFileQuit();
+	afx_msg void OnClose();
+	afx_msg void OnFileStatistics();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:
@@ -60,6 +66,11 @@ public:
 		int port;
 		HWND hwnd;
 	};
+	struct IRC_STATS
+	{
+		int sended_bytes;
+		int recieved_bytes;
+	};
 	char channel[256];
 	char exe_path[MAX_PATH];
 	char history_path[MAX_PATH];
@@ -69,10 +80,15 @@ public:
 	CStdioFile history_file_stdio;
 	BOOL IsConnected;
 	HWND hwnd_chat;
+	int sended_bytes_count;
+	int recieved_bytes_count;
 	void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params);
 	void MainWindow::delsymbs(char *str, int begin, int lng);
 	void MainWindow::CreateConnectionThread(PARAMETERS params);
 	UINT MainWindow::SendSocketMessage(char *str);
+	void MainWindow::OnOK();
+	void MainWindow::OnCancel();
 
 friend class IRCChatPage;
+friend class StatisticsDialog;
 };

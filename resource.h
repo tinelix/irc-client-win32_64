@@ -11,6 +11,7 @@
 #define IDD_EDITTEXT                    136
 #define IDD_SETTINGSDLG                 137
 #define IDD_ABOUTDLG                    139
+#define IDD_STATISTICSDLG               140
 #define IDC_IRC_CHAT_TABS               1000
 #define IDC_SOCKMSGS                    1000
 #define IDC_LANGCOMBO1                  1000
@@ -34,6 +35,13 @@
 #define IDC_WINVER_LABEL                1006
 #define IDC_DELETE_PROFILE_BTn          1007
 #define IDC_WINVER                      1007
+#define IDC_TRAFFIC_GROUP               1008
+#define IDC_SENDED_LABEL                1009
+#define IDC_SENDED_LABEL2               1010
+#define IDC_RECIEVED_LABEL              1011
+#define IDC_RECIEVED_LABEL2             1012
+#define IDC_TOTAL_LABEL                 1013
+#define IDC_TOTAL_LABEL2                1014
 #define IDC_WIN32S_EDITION              1020
 #define IDC_LICENSE_NOTIFICATION        1021
 #define IDC_COPYRIGHT                   1022
@@ -43,14 +51,15 @@
 #define ID_VIEW_SETTINGS                32772
 #define ID_FILE_CONNECT                 32773
 #define ID_FILE_QUIT                    32774
+#define ID_FILE_STATISTICS              32775
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        140
-#define _APS_NEXT_COMMAND_VALUE         32775
-#define _APS_NEXT_CONTROL_VALUE         1006
+#define _APS_NEXT_RESOURCE_VALUE        141
+#define _APS_NEXT_COMMAND_VALUE         32776
+#define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

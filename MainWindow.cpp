@@ -42,7 +42,6 @@ MainWindow::MainWindow(CWnd* pParent /*=NULL*/)
 	//{{AFX_DATA_INIT(MainWindow)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
-	irc_chat_page=new IRCChatPage;
 }
 
 
@@ -62,6 +61,9 @@ BEGIN_MESSAGE_MAP(MainWindow, CDialog)
 	ON_COMMAND(ID_FILE_CONNECT, OnFileConnect)
 	ON_COMMAND(ID_VIEW_SETTINGS, OnViewSettings)
 	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
+	ON_COMMAND(ID_FILE_QUIT, OnFileQuit)
+	ON_WM_CLOSE()
+	ON_COMMAND(ID_FILE_STATISTICS, OnFileStatistics)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -78,6 +80,10 @@ void MainWindow::delsymbs(char *str, int begin, int lng)
 BOOL MainWindow::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
+
+	irc_chat_page = new IRCChatPage;
+	stats_dlg = new StatisticsDialog;
+	stats_dlg->Create(StatisticsDialog::IDD, this);
 
 	char exe_path[MAX_PATH] = {0};
 	char dll_path[MAX_PATH] = {0};
@@ -126,8 +132,8 @@ BOOL MainWindow::OnInitDialog()
 	irc_chat_page->GetDlgItem(IDC_MSGTEXT)->MoveWindow(2, page_frame_h - 24, page_frame_w - 72, 22);
 	irc_chat_page->GetDlgItem(IDC_SENDMSG)->MoveWindow(page_frame_w - 68, page_frame_h - 24, 66, 22);
 
-	TRACE("Tinelix IRC Client ver. 0.1.3 (2021-12-02)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
-	"https:/github.com/tinelix/irc-client-for-win32s\r\n\r\n");
+	TRACE("Tinelix IRC Client ver. 0.2.2 (2021-12-27)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
+	"https:/github.com/tinelix/irc-client-for-windows\r\n\r\n");
 
 	char font_string[48] = {0};
 	int font_size = 9;
@@ -141,11 +147,9 @@ BOOL MainWindow::OnInitDialog()
 	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0,
 	0, 0, "MS Sans Serif");
 	irc_chat_page->GetDlgItem(IDC_SOCKMSGS)->SetFont(&font);
-	irc_chat_page->GetDlgItem(IDC_MSGTEXT)->SetFont(&mainfont);
-	irc_chat_page->GetDlgItem(IDC_SENDMSG)->SetFont(&mainfont);
 	IsConnected = FALSE;
 	SetWindowText("Tinelix IRC Client");
-
+	char buffer_size[40];
 	
 
 	if(!(GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3)) {
@@ -180,6 +184,9 @@ BOOL MainWindow::OnInitDialog()
 			file_submenu->m_hMenu = NULL;
 			file_submenu->CreatePopupMenu();
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
+			file_submenu->AppendMenu(MF_SEPARATOR);
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_STATISTICS, "Статистика");
+			file_submenu->AppendMenu(MF_SEPARATOR);
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
 			CMenu* view_submenu = (CMenu*)malloc(sizeof(CMenu));
 			view_submenu->m_hMenu = NULL;
@@ -226,11 +233,6 @@ BOOL MainWindow::OnInitDialog()
     		else {
 				MessageBox("WinSock cannot be initialed.", "Error", MB_OK|MB_ICONSTOP);
     		};
-			if (GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
-				MessageBox("String parsing through the \"PARSER.DLL\" library works only in Windows NT or 9x. Running "
-                 "this library in Win32s may cause the program to crash.", "Error", MB_OK);
-				FreeLibrary(parserLib);
-			};
 			setlocale(LC_ALL, "English");
 			mainmenu = (CMenu*)malloc(sizeof(CMenu));
 			mainmenu->m_hMenu = NULL;
@@ -244,6 +246,8 @@ BOOL MainWindow::OnInitDialog()
 
 	irc_chat_page->ShowWindow(SW_SHOW);
 	
+	MoveWindow(0, 0, 512, 360);
+
 	CenterWindow();
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -275,10 +279,7 @@ void MainWindow::OnSize(UINT nType, int cx, int cy)
 	irc_chat_page->GetDlgItem(IDC_SOCKMSGS)->MoveWindow(2, 2, page_frame_w - 4, page_frame_h - 28);
 	irc_chat_page->GetDlgItem(IDC_MSGTEXT)->MoveWindow(2, page_frame_h - 24, page_frame_w - 72, 22);
 	irc_chat_page->GetDlgItem(IDC_SENDMSG)->MoveWindow(page_frame_w - 68, page_frame_h - 24, 66, 22);
-	AfxGetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->MoveWindow(4, cy - 20, cx - 148, 22);
-	AfxGetMainWnd()->GetDlgItem(IDC_CONNECTION_PROGRESS)->MoveWindow(cx - 144, cy - 22, 72, 18);
-	AfxGetMainWnd()->GetDlgItem(IDC_CONNETCTION_UPTIME)->MoveWindow(cx - 72, cy - 20, 68, 22);
-
+	AfxGetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->MoveWindow(4, cy - 20, cx - 4, 22);
 }
 
 void MainWindow::OnDestroy() 
@@ -336,7 +337,7 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 			sprintf(statusbar_text, "Connection error: Not specified server address");
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
-		exit;
+		return;
 	};
 	if (port == NULL || port == 0)
 	{
@@ -351,7 +352,7 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 			sprintf(statusbar_text, "Connection error: Not specified server port");
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
-		exit;
+		return;
 	};
 
 	char* connecting_msg;
@@ -376,7 +377,7 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", WSAGetLastError());
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
-		exit;
+		return;
 	};
 
 	client_param.sin_family = AF_INET;
@@ -406,7 +407,7 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 			sprintf(statusbar_text, "Connection error: Failed to get the IP address for this hostname");
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
-		exit;
+		return;
 	};
 	client_param.sin_port = htons(port);
 	connecting_msg = "Connecting...\n";
@@ -435,7 +436,7 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", WSAGetLastError());
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
-		exit;
+		return;
 	};
 	try {
 		mainwin->IsConnected = TRUE;
@@ -561,6 +562,7 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", WSAGetLastError());
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
+		return;
 	};
 	char ident_sending[400];
 	int ident_sending_parts;
@@ -569,11 +571,20 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	ident_sending_parts += sprintf(ident_sending + ident_sending_parts, "%s :", params.nickname);
 	ident_sending_parts += sprintf(ident_sending + ident_sending_parts, "%s\r\n", params.realname);
 	status = send(sock, ident_sending, strlen(ident_sending), 0);
+	sended_bytes_count += status;
+	IRC_STATS irc_stats;
+	irc_stats.recieved_bytes = recieved_bytes_count;
+	irc_stats.sended_bytes = sended_bytes_count;
+	mainwin->stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 	char nick_sending[400];
 	int nick_sending_parts;
 	nick_sending_parts = sprintf(nick_sending, "NICK %s\n", params.nickname);
 	mainwin->irc_chat_page->GetDlgItem(IDC_MSGTEXT)->EnableWindow(TRUE);
 	status = send(sock, nick_sending, strlen(nick_sending), 0);
+	sended_bytes_count += status;
+	irc_stats.recieved_bytes = recieved_bytes_count;
+	irc_stats.sended_bytes = sended_bytes_count;
+	mainwin->stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 	if(language_string2 == "Russian") {
 		sprintf(statusbar_text, "Готово");
 	} else {
@@ -614,6 +625,11 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				int status;
 				char sock_buffer[32768] = {0};
 				status = recv((SOCKET)wParam, (char*) &sock_buffer, 32767, 0);
+				recieved_bytes_count += status;
+				IRC_STATS irc_stats;
+				irc_stats.recieved_bytes = recieved_bytes_count;
+				irc_stats.sended_bytes = sended_bytes_count;
+				stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 				if (status == SOCKET_ERROR) {
 					char error_msg[100];
 					if(lng_selitemtext == "Russian") {
@@ -678,25 +694,8 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					if (new_line_splitter[i].Left(4) == "PING") {
 						int pong_index;
 						sprintf(pong_msg, "PONG %s\r\n", new_line_splitter[i].Right(strlen(new_line_splitter[i]) - 5));
-						time_t until_ping, after_ping;
-						until_ping = clock();
 						status = send((SOCKET)wParam, pong_msg, strlen(pong_msg), 0);
-						after_ping = clock();
-						double after_ping_ms = 1000.0 * after_ping;
-						double until_ping_ms = 1000.0 * until_ping;
-						char ping_time[20];
-						double ping_time_ms = (double)(after_ping_ms - until_ping_ms) / CLOCKS_PER_SEC;
-						TRACE("[%lf]\r\n", ping_time_ms);
-						sprintf(ping_time, "%.2f ms", ping_time_ms);
-						if(ping_time_ms > 0.000) {
-							GetDlgItem(IDC_CONNETCTION_UPTIME)->SetWindowText(ping_time);
-						} else {
-							if(lng_selitemtext == "Russian") {
-								GetDlgItem(IDC_CONNETCTION_UPTIME)->SetWindowText("(Нет данных)");
-							} else {
-								GetDlgItem(IDC_CONNETCTION_UPTIME)->SetWindowText("(No data)");
-							}
-						}
+						sended_bytes_count += status;
 						pong = pong_msg;
 						i = new_line_splitter.GetSize();
 					} else {
@@ -726,11 +725,12 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							} catch(...) {
 
 							};
+							free(unparsed_msg);
+							free(parsed_msg);
 						};
 					};
 				};
 				if(pong == "") {
-					TRACE("TEXT LENGTH: %d symbols\r\n", strlen(previous_listing) + strlen(parsed_msg_list));
 					if(strlen(previous_listing) + strlen(parsed_msg_list) < 32768) {
 						sp += sprintf(listing + sp, "%s",  parsed_msg_list);
 					} else {
@@ -738,27 +738,29 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					};
 					if(msg_history_string2 == "Enabled") {
 						if(history_file_stdio.Open(history_file, CFile::modeReadWrite)) {
-							history_file_stdio.Write(listing, 32768);
+							history_file_stdio.Write(listing, strlen(listing));
 							history_file_stdio.Close();
 						} else {
 							if (history_file_stdio.Open(history_file, CFile::modeReadWrite | CFile::modeCreate)) {
-								history_file_stdio.Write(listing, 32768);
+								history_file_stdio.Write(listing, strlen(listing));
 								history_file_stdio.Close();
 							} else {
 							};
 						};
 					};
+					char* listing_without_zeros;
 					irc_chat_page->GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
 					CEdit* msg_box = (CEdit*)irc_chat_page->GetDlgItem(IDC_SOCKMSGS);
 					msg_box->SetSel(0, -1);
 					msg_box->SetSel(-1);
+
+					free(parsed_msg_list);
+
 				};
-	};
-	if(message == WM_SENDING_SOCKET_MESSAGE) {
+	} else if(message == WM_SENDING_SOCKET_MESSAGE) {
 		char *text = (char*)wParam;
 		int status = MainWindow::SendSocketMessage(text);
 	};
-	
 	return CDialog::WindowProc(message, wParam, lParam);
 }
 
@@ -768,13 +770,20 @@ BOOL MainWindow::DestroyWindow()
 	WSACleanup();
 	FreeLibrary(parserLib);
 	delete irc_chat_page;
+	delete stats_dlg;
 	return CDialog::DestroyWindow();
 }
 
 
 UINT MainWindow::SendSocketMessage(char *str)
 {
-	return send(sock, str, strlen(str), 0);
+	int status = send(sock, str, strlen(str), 0);
+	sended_bytes_count += status;
+	IRC_STATS irc_stats;
+	irc_stats.recieved_bytes = recieved_bytes_count;
+	irc_stats.sended_bytes = sended_bytes_count;
+	stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
+	return status;
 };
 
 void MainWindow::OnViewSettings() 
@@ -789,4 +798,62 @@ void MainWindow::OnHelpAbout()
 	AboutDialog aboutdlg;
 	aboutdlg.DoModal();
 	
+}
+
+void MainWindow::OnOK()
+{
+	// CDialog::OnOK();
+};
+
+void MainWindow::OnCancel()
+{
+	// CDialog::OnCancel();
+};
+
+void MainWindow::OnFileQuit() 
+{
+	EndDialog(NULL);	
+}
+
+void MainWindow::OnClose() 
+{
+	EndDialog(NULL);
+	
+	CDialog::OnClose();
+}
+
+void MainWindow::OnFileStatistics() 
+{
+	char exe_path[MAX_PATH] = {0};
+	char dll_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	TCHAR language_string[MAX_PATH] = {0};
+	
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	GetModuleFileName(NULL, dll_path, MAX_PATH);
+
+	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
+
+	strcat(exe_path, "\\settings.ini");	// add settings filename
+
+	strcat(dll_path, "\\parser.dll");
+
+	GetPrivateProfileString("Main", "Language", "", language_string, MAX_PATH, exe_path);
+
+	CString lng_selitemtext_2(language_string);
+
+	if(IsConnected == 0) {
+		if(lng_selitemtext_2 == "Russian") {
+			MessageBox("Сначала подключитесь к IRC-серверу и повторите попытку.", "Tinelix IRC Client", MB_OK|MB_ICONSTOP);	
+		} else {
+			MessageBox("First connect to the IRC server and try again.", "Tinelix IRC Client", MB_OK|MB_ICONSTOP);
+		};
+		return;
+	};
+	stats_dlg->sended_bytes_count = sended_bytes_count;
+	stats_dlg->recieved_bytes_count = recieved_bytes_count;
+	stats_dlg->CenterWindow();
+	stats_dlg->ShowWindow(SW_SHOW);
+	stats_dlg->SetForegroundWindow();
 }

@@ -2,21 +2,21 @@
 
 [General Info]
 Version=1
-LastClass=MainWindow
+LastClass=StatisticsDialog
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TinelixIRC.h"
 
-ClassCount=7
+ClassCount=8
 Class1=IRCClient
 
-ResourceCount=8
+ResourceCount=9
 Resource2=IDR_MAINMENU
 Resource1=IDR_MAINFRAME
 Class2=MainWindow
-Resource3=IDD_IRCCHATPAGE (English (U.S.))
+Resource3=IDD_ABOUTDLG (English (U.S.))
 Class3=IRCChatPage
-Resource4=IDD_MAINWINDOW (English (U.S.))
+Resource4=IDD_IRCCHATPAGE (English (U.S.))
 Resource5=IDD_CONNMAN (English (U.S.))
 Class4=ConnectionManagerDialog
 Class5=EditDialog
@@ -24,7 +24,9 @@ Resource6=IDD_EDITTEXT (English (U.S.))
 Resource7=IDD_SETTINGSDLG (English (U.S.))
 Class6=SettingsDialog
 Class7=AboutDialog
-Resource8=IDD_ABOUTDLG (English (U.S.))
+Resource8=IDD_MAINWINDOW (English (U.S.))
+Class8=StatisticsDialog
+Resource9=IDD_STATISTICSDLG (English (U.S.))
 
 [CLS:IRCClient]
 Type=0
@@ -36,11 +38,9 @@ LastObject=IDC_CONNECTION_PROGRESS
 [DLG:IDD_MAINWINDOW (English (U.S.))]
 Type=1
 Class=MainWindow
-ControlCount=4
+ControlCount=2
 Control1=IDC_IRC_CHAT_TABS,SysTabControl32,1342177280
-Control2=IDC_CONNECTION_PROGRESS,msctls_progress32,1082130432
-Control3=IDC_CONNETCTION_UPTIME,static,1342308354
-Control4=IDC_STATUSBAR_TEXT,static,1342308352
+Control2=IDC_STATUSBAR_TEXT,static,1342308352
 
 [CLS:MainWindow]
 Type=0
@@ -49,7 +49,7 @@ ImplementationFile=MainWindow.cpp
 BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
-LastObject=MainWindow
+LastObject=ID_FILE_STATISTICS
 
 [CLS:IRCChatPage]
 Type=0
@@ -57,7 +57,7 @@ HeaderFile=IRCChatPage.h
 ImplementationFile=IRCChatPage.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IRCChatPage
+LastObject=IDC_COMBO1
 VirtualFilter=dWC
 
 [DLG:IDD_IRCCHATPAGE (English (U.S.))]
@@ -72,10 +72,11 @@ Control3=IDC_SENDMSG,button,1476460544
 Type=1
 Class=MainWindow
 Command1=ID_FILE_CONNECT
-Command2=ID_FILE_QUIT
-Command3=ID_VIEW_SETTINGS
-Command4=ID_HELP_ABOUT
-CommandCount=4
+Command2=ID_FILE_STATISTICS
+Command3=ID_FILE_QUIT
+Command4=ID_VIEW_SETTINGS
+Command5=ID_HELP_ABOUT
+CommandCount=5
 
 [DLG:IDD_CONNMAN (English (U.S.))]
 Type=1
@@ -162,4 +163,25 @@ BaseClass=CDialog
 Filter=D
 LastObject=IDOK
 VirtualFilter=dWC
+
+[DLG:IDD_STATISTICSDLG (English (U.S.))]
+Type=1
+ControlCount=8
+Control1=IDOK,button,1342242817
+Control2=IDC_TRAFFIC_GROUP,button,1342177287
+Control3=IDC_SENDED_LABEL,static,1342308352
+Control4=IDC_SENDED_LABEL2,static,1342308352
+Control5=IDC_RECIEVED_LABEL,static,1342308352
+Control6=IDC_RECIEVED_LABEL2,static,1342308352
+Control7=IDC_TOTAL_LABEL,static,1342308352
+Control8=IDC_TOTAL_LABEL2,static,1342308352
+
+[CLS:StatisticsDialog]
+Type=0
+HeaderFile=StatisticsDialog.h
+ImplementationFile=StatisticsDialog.cpp
+BaseClass=CDialog
+Filter=D
+VirtualFilter=dWC
+LastObject=StatisticsDialog
 

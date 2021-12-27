@@ -47,8 +47,8 @@ BOOL IRCClient::InitInstance()
 
 	if (GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
 		MessageBox(NULL, "This version of the program does not work on Windows 3.1x."
-			"\r\nYou can download the special version at "
-			"https://github.com/tinelix/irc-client-for-win32s", "Tinelix IRC Client", 
+			"\r\nYou can download the 0.1.5 version at "
+			"https://github.com/tinelix/irc-client-for-win32s/releases", "Tinelix IRC Client", 
 			MB_ICONSTOP|MB_OK);
 		return FALSE;
 	};

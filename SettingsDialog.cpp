@@ -105,6 +105,7 @@ void SettingsDialog::OnOK()
 			file_submenu->m_hMenu = NULL;
 			file_submenu->CreatePopupMenu();
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
+			file_submenu->AppendMenu(MF_SEPARATOR);
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
 			view_submenu->m_hMenu = NULL;
 			view_submenu->CreatePopupMenu();
@@ -202,12 +203,6 @@ BOOL SettingsDialog::OnInitDialog()
 		language_combo->SelectString(NULL, language_string);
 		mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
 		0, 0, "MS Sans Serif");
-		GetDlgItem(IDOK)->SetFont(&mainfont);
-		GetDlgItem(IDCANCEL)->SetFont(&mainfont);
-		GetDlgItem(IDC_LANGLABEL)->SetFont(&mainfont);
-		GetDlgItem(IDC_LANGCOMBO1)->SetFont(&mainfont);
-		GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetFont(&mainfont);
-		GetDlgItem(IDC_CHANGE_MSG_FONT)->SetFont(&mainfont);
 
 		CString lng_selitemtext_2(language_string);
 		CString msg_history_string2(msg_history_string);

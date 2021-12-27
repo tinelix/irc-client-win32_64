@@ -68,14 +68,6 @@ BOOL AboutDialog::OnInitDialog()
 	boldfont.CreateFont(8, 0, 0, 0, FW_BOLD, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
 	0, 0, "MS Sans Serif");
 	GetDlgItem(IDC_APPNAME)->SetFont(&boldfont);
-	GetDlgItem(IDC_WIN32S_EDITION)->SetFont(&mainfont);
-	GetDlgItem(IDC_TECHINFO)->SetFont(&mainfont);
-	GetDlgItem(IDC_WINVER_LABEL)->SetFont(&mainfont);
-	GetDlgItem(IDC_WINVER)->SetFont(&mainfont);
-	GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetFont(&mainfont);
-	GetDlgItem(IDC_COPYRIGHT)->SetFont(&mainfont);
-	GetDlgItem(IDOK)->SetFont(&mainfont);
-	GetDlgItem(IDC_GITHUB_REPO_LINK)->SetFont(&mainfont);
 
 	try {
 		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
@@ -83,7 +75,7 @@ BOOL AboutDialog::OnInitDialog()
 		CString lng_selitemtext_2(language_string);
 		if(lng_selitemtext_2 == "Russian") {
 			SetWindowText("Î ïðîãðàììå Tinelix IRC Client");
-			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("äëÿ Win32s");
+			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("äëÿ Windows");
 			GetDlgItem(IDC_TECHINFO)->SetWindowText("Òåõíè÷åñêàÿ èíôîðìàöèÿ");
 			GetDlgItem(IDC_WINVER_LABEL)->SetWindowText("Âåðñèÿ Windows:");
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("Ýòî ñâîáîäíîå ïðîãðàììíîå îáåñïå÷åíèå ñ"
@@ -92,7 +84,7 @@ BOOL AboutDialog::OnInitDialog()
 			" ÃÀÐÀÍÒÈÉ, ÂÊËÞ×Àß ÊÎÌÌÅÐ×ÅÑÊÓÞ ÖÅÍÍÎÑÒÜ.");			
 		} else {
 			SetWindowText("About Tinelix IRC Client");
-			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("for Win32s");
+			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("for Windows");
 			GetDlgItem(IDC_TECHINFO)->SetWindowText("Technical Information");
 			GetDlgItem(IDC_WINVER_LABEL)->SetWindowText("Windows version:");
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("Windows version:");

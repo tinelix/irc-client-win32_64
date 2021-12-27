@@ -36,11 +36,13 @@ protected:
 	afx_msg void OnChangeMsgtext();
 	afx_msg void OnSendmsg();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnClose();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:
 	void IRCChatPage::delsymbs(char *str, int begin, int lng);
 	void IRCChatPage::OnOK();
+	void IRCChatPage::OnCancel();
 	char channel[256];
 	char exe_path[MAX_PATH];
 	char history_path[MAX_PATH];

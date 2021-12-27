@@ -48,6 +48,7 @@ BEGIN_MESSAGE_MAP(IRCChatPage, CDialog)
 	ON_WM_SIZE()
 	ON_EN_CHANGE(IDC_MSGTEXT, OnChangeMsgtext)
 	ON_BN_CLICKED(IDC_SENDMSG, OnSendmsg)
+	ON_WM_CLOSE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -158,6 +159,7 @@ void IRCChatPage::OnSendmsg()
 		args = "";
 	};
 
+
 	if(spaces_splitter[0] == "/join" && first_symbol_in_args != "#") {
 		if(spaces_splitter.GetSize() > 1) {
 			char join_msg[1024] = {0};
@@ -210,11 +212,23 @@ void IRCChatPage::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	}  if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
+	} if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char whois_msg[1024] = {0};
             sprintf(whois_msg, "WHOIS %s\r\n", spaces_splitter[1]);
             AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)whois_msg, lp);
+        } else {
+            if(language_string_2 == "Russian") {
+				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
+			} else {
+				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
+			};
+        };
+	} if(spaces_splitter[0] == "/nick" && first_symbol_in_args != "#") {
+        if(spaces_splitter.GetSize() > 1) {
+            char nick_msg[1024] = {0};
+            sprintf(nick_msg, "NICK %s\r\n", spaces_splitter[1]);
+            AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)nick_msg, lp);
         } else {
             if(language_string_2 == "Russian") {
 				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
@@ -234,19 +248,34 @@ void IRCChatPage::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/privmsg") {
-		char cmd_msg[1024] = {0};
+	} if(spaces_splitter[0] == "/nickserv" && first_symbol_in_args != "#") {
+		char nickserv_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
-			msg_index = sprintf(cmd_msg, "PRIVMSG %s", spaces_splitter[1]);
+			msg_index = sprintf(nickserv_msg, "NICKSERV %s", spaces_splitter[1]);
 			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
 				if(i == spaces_splitter.GetSize() - 1) {
-					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
-				} if (i < spaces_splitter.GetSize() - 1) {
-					msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
+					msg_index += sprintf(nickserv_msg + msg_index, " %s\r\n", spaces_splitter[i]);
+				} else if (i < spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(nickserv_msg + msg_index, " %s", spaces_splitter[i]);
 				};
 			};
-			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)cmd_msg, lp);
+			TRACE(nickserv_msg);
+			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)nickserv_msg, lp);
+		};
+	} if(spaces_splitter[0] == "/mode" && first_symbol_in_args != "#") {
+		char mode_msg[1024] = {0};
+		int msg_index = 0;
+		if(spaces_splitter.GetSize() > 2) {
+			msg_index = sprintf(mode_msg, "MODE %s", spaces_splitter[1]);
+			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
+				if(i == spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(mode_msg + msg_index, " %s\r\n", spaces_splitter[i]);
+				} else if (i < spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(mode_msg + msg_index, " %s", spaces_splitter[i]);
+				};
+			};
+			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)mode_msg, lp);
 		};
 	} if(spaces_splitter[0] == "/msg") {
 		char cmd_msg[1024] = {0};
@@ -256,7 +285,7 @@ void IRCChatPage::OnSendmsg()
 			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
 				if(i == spaces_splitter.GetSize() - 1) {
 					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
-				} if (i < spaces_splitter.GetSize() - 1) {
+				} else if (i < spaces_splitter.GetSize() - 1) {
 					msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
 				};
 			};
@@ -265,7 +294,8 @@ void IRCChatPage::OnSendmsg()
 	} if(slash == "/") {
 		if (strlen(spaces_splitter[0]) > 1) {
 			if(spaces_splitter[0] != "/msg" && spaces_splitter[0] != "/privmsg" && spaces_splitter[0] != "/join"
-			&& spaces_splitter[0] != "/part" && spaces_splitter[0] != "/ping" && spaces_splitter[0] != "/whois") {
+			&& spaces_splitter[0] != "/part" && spaces_splitter[0] != "/ping" && spaces_splitter[0] != "/whois" 
+			&& spaces_splitter[0] != "/nick" && spaces_splitter[0] != "/nickserv" && spaces_splitter[0] != "/mode") {
 				char cmd_msg[1024] = {0};
 				int msg_index;
 				msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(strlen(spaces_splitter[0]) - 1));
@@ -363,6 +393,7 @@ void IRCChatPage::OnOK()
 		args = "";
 	};
 
+
 	if(spaces_splitter[0] == "/join" && first_symbol_in_args != "#") {
 		if(spaces_splitter.GetSize() > 1) {
 			char join_msg[1024] = {0};
@@ -415,11 +446,23 @@ void IRCChatPage::OnOK()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	}  if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
+	} if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char whois_msg[1024] = {0};
             sprintf(whois_msg, "WHOIS %s\r\n", spaces_splitter[1]);
             AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)whois_msg, lp);
+        } else {
+            if(language_string_2 == "Russian") {
+				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
+			} else {
+				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
+			};
+        };
+	} if(spaces_splitter[0] == "/nick" && first_symbol_in_args != "#") {
+        if(spaces_splitter.GetSize() > 1) {
+            char nick_msg[1024] = {0};
+            sprintf(nick_msg, "NICK %s\r\n", spaces_splitter[1]);
+            AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)nick_msg, lp);
         } else {
             if(language_string_2 == "Russian") {
 				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
@@ -439,19 +482,34 @@ void IRCChatPage::OnOK()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/privmsg") {
-		char cmd_msg[1024] = {0};
+	} if(spaces_splitter[0] == "/nickserv" && first_symbol_in_args != "#") {
+		char nickserv_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
-			msg_index = sprintf(cmd_msg, "PRIVMSG %s", spaces_splitter[1]);
+			msg_index = sprintf(nickserv_msg, "NICKSERV %s", spaces_splitter[1]);
 			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
 				if(i == spaces_splitter.GetSize() - 1) {
-					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
-				} if (i < spaces_splitter.GetSize() - 1) {
-					msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
+					msg_index += sprintf(nickserv_msg + msg_index, " %s\r\n", spaces_splitter[i]);
+				} else if (i < spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(nickserv_msg + msg_index, " %s", spaces_splitter[i]);
 				};
 			};
-			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)cmd_msg, lp);
+			TRACE(nickserv_msg);
+			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)nickserv_msg, lp);
+		};
+	} if(spaces_splitter[0] == "/mode" && first_symbol_in_args != "#") {
+		char mode_msg[1024] = {0};
+		int msg_index = 0;
+		if(spaces_splitter.GetSize() > 2) {
+			msg_index = sprintf(mode_msg, "MODE %s", spaces_splitter[1]);
+			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
+				if(i == spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(mode_msg + msg_index, " %s\r\n", spaces_splitter[i]);
+				} else if (i < spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(mode_msg + msg_index, " %s", spaces_splitter[i]);
+				};
+			};
+			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)mode_msg, lp);
 		};
 	} if(spaces_splitter[0] == "/msg") {
 		char cmd_msg[1024] = {0};
@@ -461,7 +519,7 @@ void IRCChatPage::OnOK()
 			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
 				if(i == spaces_splitter.GetSize() - 1) {
 					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
-				} if (i < spaces_splitter.GetSize() - 1) {
+				} else if (i < spaces_splitter.GetSize() - 1) {
 					msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
 				};
 			};
@@ -470,7 +528,8 @@ void IRCChatPage::OnOK()
 	} if(slash == "/") {
 		if (strlen(spaces_splitter[0]) > 1) {
 			if(spaces_splitter[0] != "/msg" && spaces_splitter[0] != "/privmsg" && spaces_splitter[0] != "/join"
-			&& spaces_splitter[0] != "/part" && spaces_splitter[0] != "/ping" && spaces_splitter[0] != "/whois") {
+			&& spaces_splitter[0] != "/part" && spaces_splitter[0] != "/ping" && spaces_splitter[0] != "/whois" 
+			&& spaces_splitter[0] != "/nick" && spaces_splitter[0] != "/nickserv" && spaces_splitter[0] != "/mode") {
 				char cmd_msg[1024] = {0};
 				int msg_index;
 				msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(strlen(spaces_splitter[0]) - 1));
@@ -497,10 +556,17 @@ void IRCChatPage::OnOK()
 	sprintf(listing, "%sYou: %s\r\n", socks_msg, msg_text);
 	CString listing_2(listing);
 	GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing_2);
+	GetDlgItem(IDC_MSGTEXT)->SetWindowText("");
 	CEdit* msg_box = (CEdit*)GetDlgItem(IDC_SOCKMSGS);
 	msg_box->SetSel(0, -1);
 	msg_box->SetSel(-1);
-	GetDlgItem(IDC_MSGTEXT)->SetWindowText("");
+	//AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, wp, lp);
+};
+
+void IRCChatPage::OnCancel()
+{
+	//CDialog::OnCancel();
+	TRACE("ESC");
 };
 
 BOOL IRCChatPage::OnInitDialog() 
@@ -511,4 +577,9 @@ BOOL IRCChatPage::OnInitDialog()
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
+}
+
+void IRCChatPage::OnClose() 
+{
+
 }

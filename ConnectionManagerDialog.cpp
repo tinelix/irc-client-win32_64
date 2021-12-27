@@ -97,16 +97,6 @@ BOOL ConnectionManagerDialog::OnInitDialog()
 
 	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
 	0, 0, "MS Sans Serif");
-	GetDlgItem(IDC_LANGLABEL)->SetFont(&mainfont);
-	GetDlgItem(IDC_LANGCOMBO1)->SetFont(&mainfont);
-	GetDlgItem(IDC_PROFILES_GROUP)->SetFont(&mainfont);
-	GetDlgItem(IDC_PROFILELIST)->SetFont(&mainfont);
-	GetDlgItem(IDC_ADD_PROFILE_BTN)->SetFont(&mainfont);
-	GetDlgItem(IDC_CONNECT_PROFILE_BTN)->SetFont(&mainfont);
-	GetDlgItem(IDC_CHANGE_PROFILE_BTN)->SetFont(&mainfont);
-	GetDlgItem(IDC_DELETE_PROFILE_BTn)->SetFont(&mainfont);
-	GetDlgItem(IDOK)->SetFont(&mainfont);
-	GetDlgItem(IDCANCEL)->SetFont(&mainfont);
 
 	try {
 	char settings[32768] = {0};
