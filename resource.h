@@ -43,6 +43,7 @@
 #define IDC_TOTAL_LABEL                 1013
 #define IDC_TOTAL_LABEL2                1014
 #define IDC_WIN32S_EDITION              1020
+#define IDC_WIN32_EDITION               1020
 #define IDC_LICENSE_NOTIFICATION        1021
 #define IDC_COPYRIGHT                   1022
 #define IDC_GITHUB_REPO_LINK            1023

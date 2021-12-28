@@ -32,9 +32,9 @@ NULL=nul
 ################################################################################
 # Begin Project
 # PROP Target_Last_Scanned "TinelixIRC - Win32 Debug"
-RSC=rc.exe
-MTL=mktyplib.exe
 CPP=cl.exe
+MTL=mktyplib.exe
+RSC=rc.exe
 
 !IF  "$(CFG)" == "TinelixIRC - Win32 Release"
 
@@ -55,16 +55,16 @@ ALL : "$(OUTDIR)\tlx_irc.exe"
 
 CLEAN : 
 	-@erase ".\Release\tlx_irc.exe"
-	-@erase ".\Release\SettingsDialog.obj"
-	-@erase ".\Release\TinelixIRC.pch"
-	-@erase ".\Release\TinelixIRC.obj"
-	-@erase ".\Release\StatisticsDialog.obj"
-	-@erase ".\Release\StdAfx.obj"
-	-@erase ".\Release\AboutDialog.obj"
-	-@erase ".\Release\ConnectionManagerDialog.obj"
 	-@erase ".\Release\MainWindow.obj"
+	-@erase ".\Release\TinelixIRC.pch"
 	-@erase ".\Release\EditDialog.obj"
 	-@erase ".\Release\IRCChatPage.obj"
+	-@erase ".\Release\StatisticsDialog.obj"
+	-@erase ".\Release\TinelixIRC.obj"
+	-@erase ".\Release\ConnectionManagerDialog.obj"
+	-@erase ".\Release\AboutDialog.obj"
+	-@erase ".\Release\StdAfx.obj"
+	-@erase ".\Release\SettingsDialog.obj"
 	-@erase ".\Release\TinelixIRC.res"
 
 "$(OUTDIR)" :
@@ -94,15 +94,15 @@ LINK32=link.exe
 LINK32_FLAGS=/nologo /subsystem:windows /incremental:no\
  /pdb:"$(OUTDIR)/tlx_irc.pdb" /machine:I386 /out:"$(OUTDIR)/tlx_irc.exe" 
 LINK32_OBJS= \
-	"$(INTDIR)/SettingsDialog.obj" \
-	"$(INTDIR)/TinelixIRC.obj" \
-	"$(INTDIR)/StatisticsDialog.obj" \
-	"$(INTDIR)/StdAfx.obj" \
-	"$(INTDIR)/AboutDialog.obj" \
-	"$(INTDIR)/ConnectionManagerDialog.obj" \
 	"$(INTDIR)/MainWindow.obj" \
 	"$(INTDIR)/EditDialog.obj" \
 	"$(INTDIR)/IRCChatPage.obj" \
+	"$(INTDIR)/StatisticsDialog.obj" \
+	"$(INTDIR)/TinelixIRC.obj" \
+	"$(INTDIR)/ConnectionManagerDialog.obj" \
+	"$(INTDIR)/AboutDialog.obj" \
+	"$(INTDIR)/StdAfx.obj" \
+	"$(INTDIR)/SettingsDialog.obj" \
 	"$(INTDIR)/TinelixIRC.res"
 
 "$(OUTDIR)\tlx_irc.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -132,15 +132,15 @@ CLEAN :
 	-@erase ".\Debug\TinelixIRC.pch"
 	-@erase ".\Debug\vc40.idb"
 	-@erase ".\Debug\tlx_irc.exe"
-	-@erase ".\Debug\EditDialog.obj"
-	-@erase ".\Debug\SettingsDialog.obj"
-	-@erase ".\Debug\IRCChatPage.obj"
-	-@erase ".\Debug\TinelixIRC.obj"
-	-@erase ".\Debug\StdAfx.obj"
 	-@erase ".\Debug\AboutDialog.obj"
+	-@erase ".\Debug\TinelixIRC.obj"
 	-@erase ".\Debug\StatisticsDialog.obj"
+	-@erase ".\Debug\IRCChatPage.obj"
 	-@erase ".\Debug\MainWindow.obj"
+	-@erase ".\Debug\SettingsDialog.obj"
 	-@erase ".\Debug\ConnectionManagerDialog.obj"
+	-@erase ".\Debug\EditDialog.obj"
+	-@erase ".\Debug\StdAfx.obj"
 	-@erase ".\Debug\TinelixIRC.res"
 	-@erase ".\Debug\tlx_irc.ilk"
 	-@erase ".\Debug\tlx_irc.pdb"
@@ -173,15 +173,15 @@ LINK32=link.exe
 LINK32_FLAGS=/nologo /subsystem:windows /incremental:yes\
  /pdb:"$(OUTDIR)/tlx_irc.pdb" /debug /machine:I386 /out:"$(OUTDIR)/tlx_irc.exe" 
 LINK32_OBJS= \
-	"$(INTDIR)/EditDialog.obj" \
-	"$(INTDIR)/SettingsDialog.obj" \
-	"$(INTDIR)/IRCChatPage.obj" \
-	"$(INTDIR)/TinelixIRC.obj" \
-	"$(INTDIR)/StdAfx.obj" \
 	"$(INTDIR)/AboutDialog.obj" \
+	"$(INTDIR)/TinelixIRC.obj" \
 	"$(INTDIR)/StatisticsDialog.obj" \
+	"$(INTDIR)/IRCChatPage.obj" \
 	"$(INTDIR)/MainWindow.obj" \
+	"$(INTDIR)/SettingsDialog.obj" \
 	"$(INTDIR)/ConnectionManagerDialog.obj" \
+	"$(INTDIR)/EditDialog.obj" \
+	"$(INTDIR)/StdAfx.obj" \
 	"$(INTDIR)/TinelixIRC.res"
 
 "$(OUTDIR)\tlx_irc.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -242,6 +242,9 @@ DEP_CPP_TINEL=\
 # Begin Source File
 
 SOURCE=.\MainWindow.cpp
+
+!IF  "$(CFG)" == "TinelixIRC - Win32 Release"
+
 DEP_CPP_MAINW=\
 	".\StdAfx.h"\
 	".\TinelixIRC.h"\
@@ -256,6 +259,28 @@ DEP_CPP_MAINW=\
 "$(INTDIR)\MainWindow.obj" : $(SOURCE) $(DEP_CPP_MAINW) "$(INTDIR)"\
  "$(INTDIR)\TinelixIRC.pch"
 
+
+!ELSEIF  "$(CFG)" == "TinelixIRC - Win32 Debug"
+
+DEP_CPP_MAINW=\
+	".\StdAfx.h"\
+	".\TinelixIRC.h"\
+	".\MainWindow.h"\
+	".\ConnectionManagerDialog.h"\
+	".\SettingsDialog.h"\
+	".\AboutDialog.h"\
+	".\IRCChatPage.h"\
+	".\StatisticsDialog.h"\
+	
+NODEP_CPP_MAINW=\
+	".\;"\
+	
+
+"$(INTDIR)\MainWindow.obj" : $(SOURCE) $(DEP_CPP_MAINW) "$(INTDIR)"\
+ "$(INTDIR)\TinelixIRC.pch"
+
+
+!ENDIF 
 
 # End Source File
 ################################################################################
@@ -352,6 +377,9 @@ DEP_CPP_CONNE=\
 # Begin Source File
 
 SOURCE=.\EditDialog.cpp
+
+!IF  "$(CFG)" == "TinelixIRC - Win32 Release"
+
 DEP_CPP_EDITD=\
 	".\StdAfx.h"\
 	".\TinelixIRC.h"\
@@ -362,20 +390,63 @@ DEP_CPP_EDITD=\
  "$(INTDIR)\TinelixIRC.pch"
 
 
+!ELSEIF  "$(CFG)" == "TinelixIRC - Win32 Debug"
+
+DEP_CPP_EDITD=\
+	".\StdAfx.h"\
+	".\TinelixIRC.h"\
+	".\EditDialog.h"\
+	
+NODEP_CPP_EDITD=\
+	".\Ќельз€ создавать профиль с таким именем, так как это им€ уже зарезервировано дл€ настроек клиента"\
+	
+
+"$(INTDIR)\EditDialog.obj" : $(SOURCE) $(DEP_CPP_EDITD) "$(INTDIR)"\
+ "$(INTDIR)\TinelixIRC.pch"
+
+
+!ENDIF 
+
 # End Source File
 ################################################################################
 # Begin Source File
 
 SOURCE=.\SettingsDialog.cpp
+
+!IF  "$(CFG)" == "TinelixIRC - Win32 Release"
+
 DEP_CPP_SETTI=\
 	".\StdAfx.h"\
 	".\TinelixIRC.h"\
 	".\SettingsDialog.h"\
+	".\MainWindow.h"\
+	".\IRCChatPage.h"\
+	".\StatisticsDialog.h"\
 	
 
 "$(INTDIR)\SettingsDialog.obj" : $(SOURCE) $(DEP_CPP_SETTI) "$(INTDIR)"\
  "$(INTDIR)\TinelixIRC.pch"
 
+
+!ELSEIF  "$(CFG)" == "TinelixIRC - Win32 Debug"
+
+DEP_CPP_SETTI=\
+	".\StdAfx.h"\
+	".\TinelixIRC.h"\
+	".\SettingsDialog.h"\
+	".\MainWindow.h"\
+	".\IRCChatPage.h"\
+	".\StatisticsDialog.h"\
+	
+NODEP_CPP_SETTI=\
+	".\h"\
+	
+
+"$(INTDIR)\SettingsDialog.obj" : $(SOURCE) $(DEP_CPP_SETTI) "$(INTDIR)"\
+ "$(INTDIR)\TinelixIRC.pch"
+
+
+!ENDIF 
 
 # End Source File
 ################################################################################

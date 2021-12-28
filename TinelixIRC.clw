@@ -14,7 +14,7 @@ ResourceCount=9
 Resource2=IDR_MAINMENU
 Resource1=IDR_MAINFRAME
 Class2=MainWindow
-Resource3=IDD_ABOUTDLG (English (U.S.))
+Resource3=IDD_STATISTICSDLG (English (U.S.))
 Class3=IRCChatPage
 Resource4=IDD_IRCCHATPAGE (English (U.S.))
 Resource5=IDD_CONNMAN (English (U.S.))
@@ -26,7 +26,7 @@ Class6=SettingsDialog
 Class7=AboutDialog
 Resource8=IDD_MAINWINDOW (English (U.S.))
 Class8=StatisticsDialog
-Resource9=IDD_STATISTICSDLG (English (U.S.))
+Resource9=IDD_ABOUTDLG (English (U.S.))
 
 [CLS:IRCClient]
 Type=0
@@ -148,7 +148,7 @@ Control1=IDC_STATIC,static,1342177283
 Control2=IDOK,button,1342373889
 Control3=IDC_APPNAME,static,1342308352
 Control4=IDC_COPYRIGHT,static,1342308352
-Control5=IDC_WIN32S_EDITION,static,1342308352
+Control5=IDC_WIN32_EDITION,static,1342308352
 Control6=IDC_TECHINFO,button,1342177287
 Control7=IDC_WINVER_LABEL,static,1342308352
 Control8=IDC_WINVER,static,1342308352

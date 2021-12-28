@@ -173,7 +173,7 @@ void IRCChatPage::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
 		};
-	} if(spaces_splitter[0] == "/join" && first_symbol_in_args == "#") {
+	} else if(spaces_splitter[0] == "/join" && first_symbol_in_args == "#") {
 		if(spaces_splitter.GetSize() > 1) {
             char join_msg[1024] = {0};
             sprintf(join_msg, "JOIN %s\r\n", spaces_splitter[1]);
@@ -186,7 +186,7 @@ void IRCChatPage::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
 		};
-	} if(spaces_splitter[0] == "/part" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/part" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char part_msg[1024] = {0};
             sprintf(part_msg, "PART #%s\r\n", spaces_splitter[1]);
@@ -199,7 +199,7 @@ void IRCChatPage::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
 		};
-	} if(spaces_splitter[0] == "/part" && first_symbol_in_args == "#") {
+	} else if(spaces_splitter[0] == "/part" && first_symbol_in_args == "#") {
         if(spaces_splitter.GetSize() > 1) {
             char part_msg[1024] = {0};
             sprintf(part_msg, "PART %s\r\n", spaces_splitter[1]);
@@ -212,7 +212,7 @@ void IRCChatPage::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char whois_msg[1024] = {0};
             sprintf(whois_msg, "WHOIS %s\r\n", spaces_splitter[1]);
@@ -224,7 +224,7 @@ void IRCChatPage::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/nick" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/nick" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char nick_msg[1024] = {0};
             sprintf(nick_msg, "NICK %s\r\n", spaces_splitter[1]);
@@ -236,7 +236,7 @@ void IRCChatPage::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/ping" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/ping" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char ping_msg[1024] = {0};
             sprintf(ping_msg, "PING %s\r\n", spaces_splitter[1]);
@@ -248,7 +248,7 @@ void IRCChatPage::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/nickserv" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/nickserv" && first_symbol_in_args != "#") {
 		char nickserv_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
@@ -263,7 +263,7 @@ void IRCChatPage::OnSendmsg()
 			TRACE(nickserv_msg);
 			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)nickserv_msg, lp);
 		};
-	} if(spaces_splitter[0] == "/mode" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/mode" && first_symbol_in_args != "#") {
 		char mode_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
@@ -277,7 +277,7 @@ void IRCChatPage::OnSendmsg()
 			};
 			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)mode_msg, lp);
 		};
-	} if(spaces_splitter[0] == "/msg") {
+	} else if(spaces_splitter[0] == "/msg") {
 		char cmd_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
@@ -291,11 +291,23 @@ void IRCChatPage::OnSendmsg()
 			};
 			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)cmd_msg, lp);
 		};
-	} if(slash == "/") {
-		if (strlen(spaces_splitter[0]) > 1) {
-			if(spaces_splitter[0] != "/msg" && spaces_splitter[0] != "/privmsg" && spaces_splitter[0] != "/join"
-			&& spaces_splitter[0] != "/part" && spaces_splitter[0] != "/ping" && spaces_splitter[0] != "/whois" 
-			&& spaces_splitter[0] != "/nick" && spaces_splitter[0] != "/nickserv" && spaces_splitter[0] != "/mode") {
+	} else if(spaces_splitter[0] == "/privmsg") {
+		char cmd_msg[1024] = {0};
+		int msg_index = 0;
+		if(spaces_splitter.GetSize() > 2) {
+			msg_index = sprintf(cmd_msg, "PRIVMSG %s", spaces_splitter[1]);
+			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
+				if(i == spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
+				} else if (i < spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
+				};
+			};
+			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)cmd_msg, lp);
+		};
+	} else if(spaces_splitter[0] == "/quit") {
+		AfxGetMainWnd()->SendMessage(WM_SENDING_QUIT_MESSAGE, NULL, lp);
+	} else if(slash == "/") {
 				char cmd_msg[1024] = {0};
 				int msg_index;
 				msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(strlen(spaces_splitter[0]) - 1));
@@ -304,9 +316,7 @@ void IRCChatPage::OnSendmsg()
 				} else {
 					msg_index += sprintf(cmd_msg + msg_index, "\r\n");
 				};
-				AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)cmd_msg, lp);
-			};
-		};	
+				AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)cmd_msg, lp);	
 	} else {
 	   	char msg[1024] = {0};
 		int msg_index;
@@ -325,8 +335,7 @@ void IRCChatPage::OnSendmsg()
 	GetDlgItem(IDC_MSGTEXT)->SetWindowText("");
 	CEdit* msg_box = (CEdit*)GetDlgItem(IDC_SOCKMSGS);
 	msg_box->SetSel(0, -1);
-	msg_box->SetSel(-1);
-	//AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, wp, lp);	
+	msg_box->SetSel(-1);	
 }
 
 
@@ -407,7 +416,7 @@ void IRCChatPage::OnOK()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
 		};
-	} if(spaces_splitter[0] == "/join" && first_symbol_in_args == "#") {
+	} else if(spaces_splitter[0] == "/join" && first_symbol_in_args == "#") {
 		if(spaces_splitter.GetSize() > 1) {
             char join_msg[1024] = {0};
             sprintf(join_msg, "JOIN %s\r\n", spaces_splitter[1]);
@@ -420,7 +429,7 @@ void IRCChatPage::OnOK()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
 		};
-	} if(spaces_splitter[0] == "/part" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/part" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char part_msg[1024] = {0};
             sprintf(part_msg, "PART #%s\r\n", spaces_splitter[1]);
@@ -433,7 +442,7 @@ void IRCChatPage::OnOK()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
 		};
-	} if(spaces_splitter[0] == "/part" && first_symbol_in_args == "#") {
+	} else if(spaces_splitter[0] == "/part" && first_symbol_in_args == "#") {
         if(spaces_splitter.GetSize() > 1) {
             char part_msg[1024] = {0};
             sprintf(part_msg, "PART %s\r\n", spaces_splitter[1]);
@@ -446,7 +455,7 @@ void IRCChatPage::OnOK()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char whois_msg[1024] = {0};
             sprintf(whois_msg, "WHOIS %s\r\n", spaces_splitter[1]);
@@ -458,7 +467,7 @@ void IRCChatPage::OnOK()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/nick" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/nick" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char nick_msg[1024] = {0};
             sprintf(nick_msg, "NICK %s\r\n", spaces_splitter[1]);
@@ -470,7 +479,7 @@ void IRCChatPage::OnOK()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/ping" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/ping" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char ping_msg[1024] = {0};
             sprintf(ping_msg, "PING %s\r\n", spaces_splitter[1]);
@@ -482,7 +491,7 @@ void IRCChatPage::OnOK()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/nickserv" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/nickserv" && first_symbol_in_args != "#") {
 		char nickserv_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
@@ -497,7 +506,7 @@ void IRCChatPage::OnOK()
 			TRACE(nickserv_msg);
 			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)nickserv_msg, lp);
 		};
-	} if(spaces_splitter[0] == "/mode" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/mode" && first_symbol_in_args != "#") {
 		char mode_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
@@ -511,7 +520,7 @@ void IRCChatPage::OnOK()
 			};
 			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)mode_msg, lp);
 		};
-	} if(spaces_splitter[0] == "/msg") {
+	} else if(spaces_splitter[0] == "/privmsg") {
 		char cmd_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
@@ -525,11 +534,23 @@ void IRCChatPage::OnOK()
 			};
 			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)cmd_msg, lp);
 		};
-	} if(slash == "/") {
-		if (strlen(spaces_splitter[0]) > 1) {
-			if(spaces_splitter[0] != "/msg" && spaces_splitter[0] != "/privmsg" && spaces_splitter[0] != "/join"
-			&& spaces_splitter[0] != "/part" && spaces_splitter[0] != "/ping" && spaces_splitter[0] != "/whois" 
-			&& spaces_splitter[0] != "/nick" && spaces_splitter[0] != "/nickserv" && spaces_splitter[0] != "/mode") {
+	} else if(spaces_splitter[0] == "/msg") {
+		char cmd_msg[1024] = {0};
+		int msg_index = 0;
+		if(spaces_splitter.GetSize() > 2) {
+			msg_index = sprintf(cmd_msg, "PRIVMSG %s", spaces_splitter[1]);
+			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
+				if(i == spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
+				} else if (i < spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
+				};
+			};
+			AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)cmd_msg, lp);
+		};
+	} else if(spaces_splitter[0] == "/quit") {
+		AfxGetMainWnd()->SendMessage(WM_SENDING_QUIT_MESSAGE, NULL, lp);
+	} else if(slash == "/") {
 				char cmd_msg[1024] = {0};
 				int msg_index;
 				msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(strlen(spaces_splitter[0]) - 1));
@@ -538,9 +559,7 @@ void IRCChatPage::OnOK()
 				} else {
 					msg_index += sprintf(cmd_msg + msg_index, "\r\n");
 				};
-				AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)cmd_msg, lp);
-			};
-		};	
+				AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)cmd_msg, lp);	
 	} else {
 	   	char msg[1024] = {0};
 		int msg_index;

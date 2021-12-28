@@ -75,6 +75,7 @@ void EditDialog::OnOK()
 	
 	char exe_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	char quit_msg[512];
 
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 
@@ -85,6 +86,9 @@ void EditDialog::OnOK()
 	char language_string[MAX_PATH] = {0};
 	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 	CString lng_selitemtext_2(language_string);
+	IRCClient* application = (IRCClient*)AfxGetApp();
+	
+	sprintf(quit_msg, "Tinelix IRC Client ver. %s", application->version);
 
 	WritePrivateProfileString(profilename, "Nickname", "", exe_path);
 	WritePrivateProfileString(profilename, "ReserveNickname", "", exe_path);
@@ -92,8 +96,20 @@ void EditDialog::OnOK()
 	WritePrivateProfileString(profilename, "Realname", "", exe_path);
 	WritePrivateProfileString(profilename, "Server", "", exe_path);
 	WritePrivateProfileString(profilename, "Port", "", exe_path);
-	
+	WritePrivateProfileString(profilename, "QuitMessage", quit_msg, exe_path);
 
+	if(strcmp(profilename, "Main") == 0) {
+		try {
+			if(lng_selitemtext_2 == "Russian") {
+				MessageBox("Нельзя создавать профиль с таким именем, так как имя \"Main\" уже зарезервировано для настроек клиента.", "Ошибка", MB_OK | MB_ICONSTOP);
+			} else {
+				MessageBox("You cannot create a profile with this name because \"Main\" is already reserved for client settings.", "Error", MB_OK | MB_ICONSTOP);
+			};
+		} catch(...) {
+		
+		};
+		return;
+	};
 
 	if((UINT)ShellExecute(NULL, "open", "notepad.exe", exe_path, NULL, SW_SHOWNORMAL) <= 32) {
 		try {

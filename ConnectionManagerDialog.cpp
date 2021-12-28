@@ -26,6 +26,7 @@ struct PARAMETERS
 	char realname[80];
 	int port;
 	HWND hwnd;
+	char quit_msg[512];
 };
 
 
@@ -287,7 +288,8 @@ void ConnectionManagerDialog::OnChangeProfileBtn()
 
 void ConnectionManagerDialog::OnConnectProfileBtn() 
 {
-	MainWindow mainwin;
+	MainWindow* mainwin = (MainWindow*)GetParent();
+	IRCClient* application = (IRCClient*)AfxGetApp();
 	char selitemtext[80];
 	char section[800];
 	char port[5];
@@ -307,13 +309,20 @@ void ConnectionManagerDialog::OnConnectProfileBtn()
 	GetPrivateProfileString(selitemtext, "Nickname", "", params.nickname, 80, exe_path);
 	GetPrivateProfileString(selitemtext, "ReserveNickname", "", params.reserve_nickname, 80, exe_path);
 	GetPrivateProfileString(selitemtext, "Realname", "", params.realname, 80, exe_path);
+	GetPrivateProfileString(selitemtext, "QuitMessage", "", params.quit_msg, 512, exe_path);
 	if(strlen(params.realname) == 0) {
 		sprintf(params.realname, "Member");
+	};
+	if(strlen(params.nickname) == 0) {
+		sprintf(params.realname, "Member");
+	};
+	if(strlen(params.quit_msg) == 0) {
+		sprintf(params.quit_msg, "Tinelix IRC Client ver. %s", application->version);
 	};
 	params.port = atoi(port);
 	GetDlgItem(IDC_CONNECT_PROFILE_BTN)->EnableWindow(FALSE);
 		 
-	mainwin.CreateConnectionThread(params);
+	mainwin->CreateConnectionThread(params);
 	OnCancel();
 	
 }
@@ -363,18 +372,12 @@ void ConnectionManagerDialog::OnOK()
 	file_submenu = new CMenu;
 	help_submenu = new CMenu;
 	view_submenu = new CMenu;
+	
+	MainWindow* mainwin = (MainWindow*)GetParent();
 
 	if(lng_selitemtext_2 == "Russian") {
 		if (lng_selitemtext_3 != "Russian") {
-			char msgboxtext[360];
-			int msgbox;
-			int text_parts;
-			text_parts = sprintf(msgboxtext, "Do you really want to change the language? Russian text may be incorrect on some Windows versions.\n\n");
-			text_parts+= sprintf(msgboxtext + text_parts, "Вы действительно хотите сменить язык? Текст на русском языке может быть некорректен на некоторых версиях Windows.");
-			msgbox = MessageBox((char*)msgboxtext, "Warning", MB_YESNO|MB_ICONEXCLAMATION);
-			if (msgbox == IDYES) {
-				WritePrivateProfileString("Main", "Language", "Russian", settings_path);
-			};
+			WritePrivateProfileString("Main", "Language", "Russian", settings_path);
 
 			file_submenu->m_hMenu = NULL;
 			file_submenu->CreatePopupMenu();
@@ -392,6 +395,7 @@ void ConnectionManagerDialog::OnOK()
             rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)view_submenu->m_hMenu, "Вид");
 			rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)help_submenu->m_hMenu, "Справка");
 			GetParent()->SetMenu(rus_mainmenu);
+			mainwin->irc_chat_page->GetDlgItem(IDC_SENDMSG)->SetWindowText("Отправить");
 		} else {
 			WritePrivateProfileString("Main", "Language", "Russian", settings_path);
 		};
@@ -401,6 +405,7 @@ void ConnectionManagerDialog::OnOK()
 		eng_mainmenu->m_hMenu = NULL;
 		eng_mainmenu->LoadMenu(IDR_MAINMENU);
 		GetParent()->SetMenu(eng_mainmenu);
+		mainwin->irc_chat_page->GetDlgItem(IDC_SENDMSG)->SetWindowText("Send");
 	};
 
 	delete(eng_mainmenu);

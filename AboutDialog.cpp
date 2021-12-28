@@ -52,6 +52,8 @@ BOOL AboutDialog::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
+	IRCClient* application = (IRCClient*)AfxGetApp();
+	
 	char exe_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 
@@ -69,13 +71,19 @@ BOOL AboutDialog::OnInitDialog()
 	0, 0, "MS Sans Serif");
 	GetDlgItem(IDC_APPNAME)->SetFont(&boldfont);
 
+	char app_name[128];
+
+	sprintf(app_name, "Tinelix IRC Client %s %s", application->version_number, application->stabillity_level);
+
+	GetDlgItem(IDC_APPNAME)->SetWindowText(app_name);
+
 	try {
 		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 
 		CString lng_selitemtext_2(language_string);
 		if(lng_selitemtext_2 == "Russian") {
 			SetWindowText("Î ïðîãðàììå Tinelix IRC Client");
-			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("äëÿ Windows");
+			GetDlgItem(IDC_WIN32_EDITION)->SetWindowText("äëÿ Windows");
 			GetDlgItem(IDC_TECHINFO)->SetWindowText("Òåõíè÷åñêàÿ èíôîðìàöèÿ");
 			GetDlgItem(IDC_WINVER_LABEL)->SetWindowText("Âåðñèÿ Windows:");
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("Ýòî ñâîáîäíîå ïðîãðàììíîå îáåñïå÷åíèå ñ"
@@ -84,7 +92,7 @@ BOOL AboutDialog::OnInitDialog()
 			" ÃÀÐÀÍÒÈÉ, ÂÊËÞ×Àß ÊÎÌÌÅÐ×ÅÑÊÓÞ ÖÅÍÍÎÑÒÜ.");			
 		} else {
 			SetWindowText("About Tinelix IRC Client");
-			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("for Windows");
+			GetDlgItem(IDC_WIN32_EDITION)->SetWindowText("for Windows");
 			GetDlgItem(IDC_TECHINFO)->SetWindowText("Technical Information");
 			GetDlgItem(IDC_WINVER_LABEL)->SetWindowText("Windows version:");
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("Windows version:");

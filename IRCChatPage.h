@@ -5,6 +5,7 @@
 // IRCChatPage dialog
 
 #define WM_SENDING_SOCKET_MESSAGE 0xAFFE
+#define WM_SENDING_QUIT_MESSAGE 0xAFFB
 
 class IRCChatPage : public CDialog
 {

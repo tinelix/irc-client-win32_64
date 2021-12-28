@@ -28,6 +28,8 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 		};
 		token = strtok(NULL, " ");
 	};
+	
+	OutputDebugString("Parsing...\r\n");
 
 	for (int i = 0; i < index; i++) {
 		if(i < 2 && strlen(array[i]) < 4) {
@@ -59,11 +61,7 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 			strtok(array[i], "!");
 			string_index += sprintf(output + string_index, "%s ", array[i]);
 		} if(i == 2 && strcmp(array[1], "PRIVMSG") == 0) {
-			if(array[i][0] != '#') {
-				string_index += sprintf(output + string_index, "(direct):");
-			} else {
-				string_index += sprintf(output + string_index, "(#%s):", array[i] + 1);
-			};
+			string_index += sprintf(output + string_index, "(#%s):", array[i] + 1);
 		} if(i == 0 && strcmp(array[1], "JOIN") == 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code is JOIN.");
@@ -71,28 +69,6 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 			};
 			strtok(array[i], "!");
 			string_index += sprintf(output + string_index, "%s joined on the ", array[i]);
-		} if(i == 0 && strcmp(array[1], "QUIT") == 0) {
-			if (debug == TRUE) {
-				OutputDebugString("Code is QUIT.");
-				OutputDebugString("\r\n");
-			};
-			strtok(array[i], "!");
-			if(strlen(array[i]) < 3) {
-				string_index += sprintf(output + string_index, "%s quited.", array[i]);
-			} else {
-				string_index += sprintf(output + string_index, "%s quited on the reason: [", array[i]);
-			};
-		} if(i >= 2 && strcmp(array[1], "QUIT") == 0) {
-			if (debug == TRUE) {
-				OutputDebugString("Code is QUIT.");
-				OutputDebugString("\r\n");
-			};
-			strtok(array[i], "!");
-			if(i > index - 2) {
-				string_index += sprintf(output + string_index, "%s].", array[i]);
-			} else {
-				string_index += sprintf(output + string_index, "%s ", array[i]);
-			};
 		} if(i == 2 && strcmp(array[1], "JOIN") == 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code is JOIN.");
@@ -111,7 +87,7 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 				OutputDebugString("\r\n");
 			};
 			string_index += sprintf(output + string_index, "Code %s:", array[i]);
-		} if (i > index - 2 && strcmp(array[1], "JOIN") != 0 && strcmp(array[1], "QUIT") != 0) {
+		} if (i > index - 2 && strcmp(array[1], "JOIN") != 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code isn't digit. (i > index - 2)");
 				OutputDebugString("\r\n");
@@ -149,14 +125,8 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 						OutputDebugString("Parsing messages (strcmp(array[1], \"JOIN\") == 0 && i >= 3)");
 						OutputDebugString("\r\n");
 					};
-				} if (strcmp(array[1], "QUIT") == 0 && i >= 3) {
-					if (debug == TRUE) {
-						OutputDebugString("Parsing messages (strcmp(array[1], \"QUIT\") == 0 && i >= 3)");
-						OutputDebugString("\r\n");
-					};
 				} if (i == 1 && isdigit(code) == 0 && strcmp(array[1], "PRIVMSG") != 0
-				  	  && strcmp(array[1], "JOIN") != 0 && strcmp(array[1], "QUIT") != 0 
-				  	  && strcmp(array[1], "372") != 0) {
+				  	  && strcmp(array[1], "JOIN") != 0 && strcmp(array[1], "372") != 0) {
 					if (debug == TRUE) {
 						OutputDebugString("Parsing messages (i == 1 && isdigit(code) == 0 && strcmp(array[1], \"PRIVMSG\")\r\n"
 						"!= 0 && strcmp(array[1], \"JOIN\") != 0 && strcmp(array[1], \"372\") != 0)");
@@ -164,8 +134,7 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 					};
 					string_index += sprintf(output + string_index, "%s", array[i]);
 				} if (i > 1 && isdigit(code) == 0 && strcmp(array[1], "PRIVMSG") != 0 
-				  	  && strcmp(array[1], "JOIN") != 0 && strcmp(array[1], "QUIT") != 0
-				  	  && strcmp(array[1], "372") != 0) {
+				  	  && strcmp(array[1], "JOIN") != 0 && strcmp(array[1], "372") != 0) {
 					if (debug == TRUE) {
 						OutputDebugString("Parsing messages (i > 1 && isdigit(code) == 0 && strcmp(array[1], \"PRIVMSG\") != 0\r\n"
 						"&& strcmp(array[1], \"JOIN\") != 0 && strcmp(array[1], \"372\") != 0)");
@@ -180,7 +149,7 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 					string_index += sprintf(output + string_index, " %s", array[i]);
 				};		
 			};
-		};
+		};	
 	};
 
 
@@ -190,60 +159,6 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 
 	//};
 	
-};
-
-extern "C" __declspec(dllexport) void ParseNamesMessage(char* line, char* array[], char* owners_array[], 
-char* operators_array[], char* members_array[], BOOL debug) {					  
-	int owners_index = 0;
-	int operators_index = 0;
-	int members_index = 0;
-	for (int index = 5; index < 32768; index++) {
-		if(array[index] == "\0" || array[index] == NULL) {
-			
-		} else if(array[index][0] == ':' && array[index][1] == '~') {
-			if (debug == TRUE) {
-				OutputDebugString("Parsing NAMES messages (if owner): ");
-				OutputDebugString(array[index]);
-				OutputDebugString("\r\n");
-			};
-			owners_array[owners_index++] = array[index] + 2;
-		} else if(array[index][0] == ':' && array[index][1] == '@') {
-			if (debug == TRUE) {
-				OutputDebugString("Parsing NAMES messages (if operator): ");
-				OutputDebugString(array[index]);
-				OutputDebugString("\r\n");
-			};
-			operators_array[operators_index++] = array[index] + 2;
-		} else if(array[index][0] == '~') {
-			if (debug == TRUE) {
-				OutputDebugString("Parsing NAMES messages (if owner without \":\" mask): ");
-				OutputDebugString(array[index]);
-				OutputDebugString("\r\n");
-			};
-			owners_array[owners_index++] = array[index] + 1;
-		} else if(array[index][0] == '@') {
-			if (debug == TRUE) {
-				OutputDebugString("Parsing NAMES messages (if operator without \":\" mask): ");
-				OutputDebugString(array[index]);
-				OutputDebugString("\r\n");
-			};
-			operators_array[operators_index++] = array[index] + 1;
-		} else if(array[index][0] == ':') {
-			if (debug == TRUE) {
-				OutputDebugString("Parsing NAMES messages (if member): ");
-				OutputDebugString(array[index]);
-				OutputDebugString("\r\n");
-			};
-			members_array[members_index++] = array[index] + 1;
-		} else {
-			if (debug == TRUE) {
-				OutputDebugString("Parsing NAMES messages (if member without \":\" mask): ");
-				OutputDebugString(array[index]);
-				OutputDebugString("\r\n");
-			};
-			members_array[members_index++] = array[index];
-		};
-	};
 };
 
 extern "C" __declspec(dllexport) void FreeArray() {

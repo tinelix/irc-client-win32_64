@@ -16,6 +16,9 @@ class IRCClient : public CWinApp
 {
 public:
 	IRCClient();
+	char version[64];
+	char version_number[6];
+	char stabillity_level[6];
 
 // Overrides
 	// ClassWizard generated virtual function overrides

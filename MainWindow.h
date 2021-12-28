@@ -8,6 +8,7 @@
 #define WM_SENDING_SOCKET_MESSAGE 0xAFFE
 #define WM_CHANGING_MSGFONT 0xAFFD
 #define WM_UPDATING_STATISTICS 0xAFFC
+#define WM_SENDING_QUIT_MESSAGE 0xAFFB
 #define WM_SOCKET_TIMER 1;
 
 #include "IRCChatPage.h"
@@ -40,6 +41,7 @@ public:
 protected:
 	IRCChatPage* irc_chat_page;
 	StatisticsDialog* stats_dlg;
+	char** parsing_array;
 	CFont font;
 	CFont mainfont;
 
@@ -65,12 +67,14 @@ public:
 		char realname[80];
 		int port;
 		HWND hwnd;
+		char quit_msg[512];
 	};
 	struct IRC_STATS
 	{
 		int sended_bytes;
 		int recieved_bytes;
 	};
+	PARAMETERS params;
 	char channel[256];
 	char exe_path[MAX_PATH];
 	char history_path[MAX_PATH];
@@ -91,4 +95,6 @@ public:
 
 friend class IRCChatPage;
 friend class StatisticsDialog;
+friend class SettingsDialog;
+friend class ConnectionManagerDialog;
 };

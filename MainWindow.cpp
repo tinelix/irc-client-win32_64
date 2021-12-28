@@ -81,6 +81,12 @@ BOOL MainWindow::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	IRCClient* application = (IRCClient*)AfxGetApp();
+	
+	HICON m_hIcon = application->LoadIcon(IDR_MAINFRAME);
+
+	SetIcon(m_hIcon, TRUE);
+	
 	irc_chat_page = new IRCChatPage;
 	stats_dlg = new StatisticsDialog;
 	stats_dlg->Create(StatisticsDialog::IDD, this);
@@ -103,6 +109,11 @@ BOOL MainWindow::OnInitDialog()
 	GetPrivateProfileString("Main", "Language", "", language_string, MAX_PATH, exe_path);
 
 	CString lng_selitemtext_2(language_string);
+
+	parsing_array = new char*[32768];
+	for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
+		parsing_array[array_index] = new char[32768];
+	};
 	
 	TC_ITEM tci;
 	tci.mask = TCIF_TEXT;
@@ -132,8 +143,8 @@ BOOL MainWindow::OnInitDialog()
 	irc_chat_page->GetDlgItem(IDC_MSGTEXT)->MoveWindow(2, page_frame_h - 24, page_frame_w - 72, 22);
 	irc_chat_page->GetDlgItem(IDC_SENDMSG)->MoveWindow(page_frame_w - 68, page_frame_h - 24, 66, 22);
 
-	TRACE("Tinelix IRC Client ver. 0.2.2 (2021-12-27)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
-	"https:/github.com/tinelix/irc-client-for-windows\r\n\r\n");
+	TRACE("Tinelix IRC Client ver. %s\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
+	"https:/github.com/tinelix/irc-client-for-windows\r\n\r\n", application->version);
 
 	char font_string[48] = {0};
 	int font_size = 9;
@@ -293,7 +304,13 @@ void MainWindow::OnFileConnect()
 {
 	ConnectionManagerDialog connman;
 	connman.SetConnectionState(IsConnected);
-	connman.DoModal();
+	int connman_modal = connman.DoModal();
+	if(connman_modal == IDOK) {
+		IRC_STATS irc_stats;
+		irc_stats.recieved_bytes = recieved_bytes_count;
+		irc_stats.sended_bytes = sended_bytes_count;
+		stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
+	};
 }
 
 void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params) 
@@ -363,18 +380,20 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	hostent* host;
 	if (sock == SOCKET_ERROR) {
 		if(language_string2 == "Russian") {
-			char* error_msg;
-			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
+			char error_msg[512];
+			int errorcode = WSAGetLastError();
+			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки %d", errorcode);
 			MessageBox(error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
 			char statusbar_text[512];
-			sprintf(statusbar_text, "Ошибка подключения: Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
+			sprintf(statusbar_text, "Ошибка подключения: Не удалось запустить WinSock с кодом ошибки %d", errorcode);
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		} else {
-			char* error_msg;
-			sprintf(error_msg, "Could not start WinSock with error code %d", WSAGetLastError());
+			char error_msg[512];
+			int errorcode = WSAGetLastError();
+			sprintf(error_msg, "Could not start WinSock with error code %d", errorcode);
 			MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
 			char statusbar_text[512];
-			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", WSAGetLastError());
+			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", errorcode);
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
 		return;
@@ -422,18 +441,20 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	status = connect(sock, (SOCKADDR*)&client_param, sizeof(client_param));
 	if (status == SOCKET_ERROR || status == INVALID_SOCKET) {
 		if(language_string2 == "Russian") {
-			char* error_msg;
-			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
+			char error_msg[512];
+			int errorcode = WSAGetLastError();
+			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки %d", errorcode);
 			MessageBox(error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
 			char statusbar_text[512];
-			sprintf(statusbar_text, "Ошибка подключения: Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
+			sprintf(statusbar_text, "Ошибка подключения: Не удалось запустить WinSock с кодом ошибки %d", errorcode);
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		} else {
-			char* error_msg;
-			sprintf(error_msg, "Could not start WinSock with error code %d", WSAGetLastError());
+			char error_msg[512];
+			int errorcode = WSAGetLastError();
+			sprintf(error_msg, "Could not start WinSock with error code %d", errorcode);
 			MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
 			char statusbar_text[512];
-			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", WSAGetLastError());
+			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", errorcode);
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
 		return;
@@ -548,18 +569,20 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	int WSAAsync = WSAAsyncSelect(sock, AfxGetApp()->GetMainWnd()->GetSafeHwnd(), WM_SOCKET_MESSAGE, FD_READ | FD_CLOSE);
 	if (WSAAsync > 0) {
 		if(language_string2 == "Russian") {
-			char* error_msg;
-			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
+			char error_msg[512];
+			int errorcode = WSAGetLastError();
+			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки %d", errorcode);
 			MessageBox(error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
 			char statusbar_text[512];
-			sprintf(statusbar_text, "Ошибка подключения: Не удалось запустить WinSock с кодом ошибки %d", WSAGetLastError());
+			sprintf(statusbar_text, "Ошибка подключения: Не удалось запустить WinSock с кодом ошибки %d", errorcode);
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		} else {
-			char* error_msg;
-			sprintf(error_msg, "Could not start WinSock with error code %d", WSAGetLastError());
+			char error_msg[512];
+			int errorcode = WSAGetLastError();
+			sprintf(error_msg, "Could not start WinSock with error code %d", errorcode);
 			MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
 			char statusbar_text[512];
-			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", WSAGetLastError());
+			sprintf(statusbar_text, "Connection error: Could not start WinSock with error code %d", errorcode);
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_STATUSBAR_TEXT)->SetWindowText(statusbar_text);
 		};
 		return;
@@ -594,12 +617,18 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 
 }
 
-void MainWindow::CreateConnectionThread(PARAMETERS params) 
+void MainWindow::CreateConnectionThread(PARAMETERS profile_params) 
 {
 	HWND hwnd;
 	hwnd = m_hWnd;
 	char change_font[100];
-	MainWindow::ConnectionFunc(hwnd, params);
+	sprintf(params.nickname, "%s", profile_params.nickname);
+	sprintf(params.reserve_nickname, "%s", profile_params.reserve_nickname);
+	sprintf(params.nickname, "%s", profile_params.nickname);
+	sprintf(params.server, "%s", profile_params.server);
+	params.port = profile_params.port;
+	sprintf(params.quit_msg, "%s", profile_params.quit_msg);
+	MainWindow::ConnectionFunc(hwnd, profile_params);
 
 }
 
@@ -707,13 +736,9 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							};
 						} else {	
 							char* unparsed_msg;
-							char** parsing_array;
+							char* parsed_msg;
 							unparsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
 							parsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
-							parsing_array = (char**)calloc(sizeof(char*), 32768 + 1);
-							for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
-								parsing_array[array_index] = (char*)calloc(sizeof(char), 32768 + 1);
-							};
 							sprintf(unparsed_msg, "%s", new_line_splitter[i]);
 							ParseMessage ParseMsg;
 							ParseMsg = (ParseMessage)GetProcAddress((HMODULE)parserLib, "ParseMessage");
@@ -722,11 +747,19 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 								CString p_msg(parsed_msg);
 								//TRACE("OUTPUT: %s\r\n", parsed_msg);
 								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
+								if(strcmp(parsing_array[1], "433") == 0) {
+									char nick_msg[128];
+									sprintf(nick_msg, "NICK %s\r\n", params.reserve_nickname);
+									status = send((SOCKET)wParam, nick_msg, strlen(nick_msg), 0);
+									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", "WARNING: We will use next nickname.\r\n");
+								};
 							} catch(...) {
 
 							};
-							free(unparsed_msg);
-							free(parsed_msg);
+
+							delete unparsed_msg;
+							delete parsed_msg;
+
 						};
 					};
 				};
@@ -748,18 +781,20 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							};
 						};
 					};
-					char* listing_without_zeros;
 					irc_chat_page->GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
 					CEdit* msg_box = (CEdit*)irc_chat_page->GetDlgItem(IDC_SOCKMSGS);
 					msg_box->SetSel(0, -1);
 					msg_box->SetSel(-1);
 
-					free(parsed_msg_list);
-
+					delete parsed_msg_list;
 				};
 	} else if(message == WM_SENDING_SOCKET_MESSAGE) {
 		char *text = (char*)wParam;
 		int status = MainWindow::SendSocketMessage(text);
+	} else if(message == WM_SENDING_QUIT_MESSAGE) {
+		char quit_msg[640];
+		sprintf(quit_msg, "QUIT %s\r\n", params.quit_msg);
+		int status = MainWindow::SendSocketMessage(quit_msg);
 	};
 	return CDialog::WindowProc(message, wParam, lParam);
 }
@@ -768,9 +803,12 @@ BOOL MainWindow::DestroyWindow()
 {
 	closesocket(sock);
 	WSACleanup();
+	TRACE("Quiting...\r\n");
 	FreeLibrary(parserLib);
 	delete irc_chat_page;
 	delete stats_dlg;
+	TRACE("Freeing memory...\r\n");
+	delete parsing_array;
 	return CDialog::DestroyWindow();
 }
 
@@ -789,7 +827,13 @@ UINT MainWindow::SendSocketMessage(char *str)
 void MainWindow::OnViewSettings() 
 {
 	SettingsDialog setgdlg;
-	setgdlg.DoModal();
+	int settings_modal = setgdlg.DoModal();
+	if(settings_modal == IDOK) {
+		IRC_STATS irc_stats;
+		irc_stats.recieved_bytes = recieved_bytes_count;
+		irc_stats.sended_bytes = sended_bytes_count;
+		stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
+	};
 	
 }
 
@@ -812,13 +856,24 @@ void MainWindow::OnCancel()
 
 void MainWindow::OnFileQuit() 
 {
+	if(IsConnected == 1) {
+		char quit_msg[640];
+		sprintf(quit_msg, "QUIT %s\r\n", params.quit_msg);
+		TRACE("Sending quit message...\r\n");
+		SendSocketMessage(quit_msg);
+	};
 	EndDialog(NULL);	
 }
 
 void MainWindow::OnClose() 
 {
+	if(IsConnected == 1) {
+		char quit_msg[640];
+		sprintf(quit_msg, "QUIT %s\r\n", params.quit_msg);
+		TRACE("Sending quit message...\r\n");
+		SendSocketMessage(quit_msg);
+	};
 	EndDialog(NULL);
-	
 	CDialog::OnClose();
 }
 

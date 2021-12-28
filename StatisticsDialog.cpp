@@ -82,21 +82,32 @@ BOOL StatisticsDialog::OnInitDialog()
 		char sended_bytes_value[128];
 		char recieved_bytes_value[128];
 		char total_bytes_value[128];
-		if(sended_bytes_count < 1024) {
-			sprintf(sended_bytes_value, "%d байт", sended_bytes_count);
-		} else {
+		if(sended_bytes_count >= 1048576) {
+			sprintf(sended_bytes_value, "%.2f МБ", (double)(sended_bytes_count) / 1048576);
+		} else if(sended_bytes_count >= 1024) {
 			sprintf(sended_bytes_value, "%.2f кБ", (double)(sended_bytes_count) / 1024);
-		};
-		TRACE("%d\r\n", recieved_bytes_count);
-		if(recieved_bytes_count < 1024) {
-			sprintf(recieved_bytes_value, "%d байт", recieved_bytes_count);
+		} else if(sended_bytes_count < 0) {
+			sprintf(sended_bytes_value, "(неизвестно)");
 		} else {
+			sprintf(sended_bytes_value, "%d байт", sended_bytes_count);
+		};
+		if(recieved_bytes_count >= 1048576) {
+			sprintf(recieved_bytes_value, "%.2f МБ", (double)(recieved_bytes_count) / 1048576);
+		} else if(recieved_bytes_count >= 1024) {
 			sprintf(recieved_bytes_value, "%.2f кБ", (double)(recieved_bytes_count) / 1024);
-		};
-		if(total_bytes_count < 1024) {
-			sprintf(total_bytes_value, "%d байт", total_bytes_count);
+		} else if(recieved_bytes_count < 0) {
+			sprintf(recieved_bytes_value, "(неизвестно)");
 		} else {
+			sprintf(recieved_bytes_value, "%d байт", recieved_bytes_count);
+		};
+		if(total_bytes_count >= 1048576) {
+			sprintf(total_bytes_value, "%.2f МБ", (double)(total_bytes_count) / 1048576);
+		} else if(total_bytes_count >= 1024) {
 			sprintf(total_bytes_value, "%.2f кБ", (double)(total_bytes_count) / 1024);
+		} else if(total_bytes_count < 0) {
+			sprintf(total_bytes_value, "(неизвестно)");
+		} else {
+			sprintf(total_bytes_value, "%d байт", total_bytes_count);
 		};
 		GetDlgItem(IDC_SENDED_LABEL2)->SetWindowText(sended_bytes_value);
 		GetDlgItem(IDC_RECIEVED_LABEL2)->SetWindowText(recieved_bytes_value);
@@ -110,21 +121,32 @@ BOOL StatisticsDialog::OnInitDialog()
 		char sended_bytes_value[128];
 		char recieved_bytes_value[128];
 		char total_bytes_value[128];
-		TRACE("%d\r\n", recieved_bytes_count);
-		if(sended_bytes_count < 1024) {
+		if(sended_bytes_count >= 1048576) {
+			sprintf(sended_bytes_value, "%.2f MB", (double)(sended_bytes_count) / 1048576);
+		} else if(sended_bytes_count >= 1024) {
+			sprintf(sended_bytes_value, "%.2f kB", (double)(sended_bytes_count) / 1024);
+		} else if(sended_bytes_count < 0) {
+			sprintf(sended_bytes_value, "(unknown)");
+		} else {
 			sprintf(sended_bytes_value, "%d bytes", sended_bytes_count);
-		} else {
-			sprintf(sended_bytes_value, "%.2f kB", (double)(recieved_bytes_count) / 1024);
 		};
-		if(recieved_bytes_count < 1024) {
-			sprintf(recieved_bytes_value, "%d bytes", recieved_bytes_count);
-		} else {
+		if(recieved_bytes_count >= 1048576) {
+			sprintf(recieved_bytes_value, "%.2f MB", (double)(recieved_bytes_count) / 1048576);
+		} else if(recieved_bytes_count >= 1024) {
 			sprintf(recieved_bytes_value, "%.2f kB", (double)(recieved_bytes_count) / 1024);
-		};
-		if(total_bytes_count < 1024) {
-			sprintf(total_bytes_value, "%d bytes", total_bytes_count);
+		} else if(recieved_bytes_count < 0) {
+			sprintf(recieved_bytes_value, "(unknown)");
 		} else {
+			sprintf(recieved_bytes_value, "%d bytes", recieved_bytes_count);
+		};
+		if(total_bytes_count >= 1048576) {
+			sprintf(total_bytes_value, "%.2f MB", (double)(total_bytes_count) / 1048576);
+		} else if(total_bytes_count >= 1024) {
 			sprintf(total_bytes_value, "%.2f kB", (double)(total_bytes_count) / 1024);
+		} else if(total_bytes_count < 0) {
+			sprintf(total_bytes_value, "(unknown)");
+		} else {
+			sprintf(total_bytes_value, "%d bytes", total_bytes_count);
 		};
 		GetDlgItem(IDC_SENDED_LABEL2)->SetWindowText(sended_bytes_value);
 		GetDlgItem(IDC_RECIEVED_LABEL2)->SetWindowText(recieved_bytes_value);
@@ -164,46 +186,73 @@ LRESULT StatisticsDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		int total_bytes_count = sended_bytes_count + recieved_bytes_count;
 
 		if(lng_selitemtext_2 == "Russian") {
+			SetWindowText("Статистика");
+			GetDlgItem(IDC_TRAFFIC_GROUP)->SetWindowText("Трафик");
+			GetDlgItem(IDC_SENDED_LABEL)->SetWindowText("Отправлено:");
+			GetDlgItem(IDC_RECIEVED_LABEL)->SetWindowText("Получено:");
+			GetDlgItem(IDC_TOTAL_LABEL)->SetWindowText("Итого:");
 			char sended_bytes_value[128];
 			char recieved_bytes_value[128];
 			char total_bytes_value[128];
-			if(sended_bytes_count < 1024) {
-				sprintf(sended_bytes_value, "%d байт", sended_bytes_count);
-			} else {
+			if(sended_bytes_count >= 1048576) {
+				sprintf(sended_bytes_value, "%.2f МБ", (double)(sended_bytes_count) / 1048576);
+			} else if(sended_bytes_count >= 1024) {
 				sprintf(sended_bytes_value, "%.2f кБ", (double)(sended_bytes_count) / 1024);
-			};
-			TRACE("%d\r\n", recieved_bytes_count);
-			if(recieved_bytes_count < 1024) {
-				sprintf(recieved_bytes_value, "%d байт", recieved_bytes_count);
+			} else if(sended_bytes_count < 0) {
+				sprintf(sended_bytes_value, "(неизвестно)", (double)(sended_bytes_count) / 1024);
 			} else {
+				sprintf(sended_bytes_value, "%d байт", sended_bytes_count);
+			};
+			if(recieved_bytes_count >= 1048576) {
+				sprintf(recieved_bytes_value, "%.2f МБ", (double)(recieved_bytes_count) / 1048576);
+			} else if(recieved_bytes_count >= 1024) {
 				sprintf(recieved_bytes_value, "%.2f кБ", (double)(recieved_bytes_count) / 1024);
-			};
-			if(total_bytes_count < 1024) {
-				sprintf(total_bytes_value, "%d байт", total_bytes_count);
+			} else if(recieved_bytes_count < 0) {
+				sprintf(recieved_bytes_value, "(неизвестно)");
 			} else {
+				sprintf(recieved_bytes_value, "%d байт", recieved_bytes_count);
+			};
+			if(total_bytes_count >= 1048576) {
+				sprintf(total_bytes_value, "%.2f МБ", (double)(total_bytes_count) / 1048576);
+			} else if(total_bytes_count >= 1024) {
 				sprintf(total_bytes_value, "%.2f кБ", (double)(total_bytes_count) / 1024);
+			} else if(total_bytes_count < 0) {
+				sprintf(total_bytes_value, "(неизвестно)");
+			} else {
+				sprintf(total_bytes_value, "%d байт", total_bytes_count);
 			};
 			GetDlgItem(IDC_SENDED_LABEL2)->SetWindowText(sended_bytes_value);
 			GetDlgItem(IDC_RECIEVED_LABEL2)->SetWindowText(recieved_bytes_value);
 			GetDlgItem(IDC_TOTAL_LABEL2)->SetWindowText(total_bytes_value);
 		} else {
+			SetWindowText("Statistics");
+			GetDlgItem(IDC_TRAFFIC_GROUP)->SetWindowText("Traffic");
+			GetDlgItem(IDC_SENDED_LABEL)->SetWindowText("Sended:");
+			GetDlgItem(IDC_RECIEVED_LABEL)->SetWindowText("Recieved:");
+			GetDlgItem(IDC_TOTAL_LABEL)->SetWindowText("Total:");
 			char sended_bytes_value[128];
 			char recieved_bytes_value[128];
 			char total_bytes_value[128];
-			if(sended_bytes_count < 1024) {
+			if(sended_bytes_count >= 1048576) {
+				sprintf(sended_bytes_value, "%.2f MB", (double)(sended_bytes_count) / 1048576);
+			} else if(sended_bytes_count >= 1024) {
+				sprintf(sended_bytes_value, "%.2f kB", (double)(sended_bytes_count) / 1024);
+			} else {
 				sprintf(sended_bytes_value, "%d bytes", sended_bytes_count);
-			} else {
-				sprintf(sended_bytes_value, "%.2f kB", (double)(recieved_bytes_count) / 1024);
 			};
-			if(recieved_bytes_count < 1024) {
-				sprintf(recieved_bytes_value, "%d bytes", recieved_bytes_count);
-			} else {
+			if(recieved_bytes_count >= 1048576) {
+				sprintf(recieved_bytes_value, "%.2f MB", (double)(recieved_bytes_count) / 1048576);
+			} else if(recieved_bytes_count >= 1024) {
 				sprintf(recieved_bytes_value, "%.2f kB", (double)(recieved_bytes_count) / 1024);
-			};
-			if(total_bytes_count < 1024) {
-				sprintf(total_bytes_value, "%d bytes", total_bytes_count);
 			} else {
+				sprintf(recieved_bytes_value, "%d bytes", recieved_bytes_count);
+			};
+			if(total_bytes_count >= 1048576) {
+				sprintf(total_bytes_value, "%.2f MB", (double)(total_bytes_count) / 1048576);
+			} else if(total_bytes_count >= 1024) {
 				sprintf(total_bytes_value, "%.2f kB", (double)(total_bytes_count) / 1024);
+			} else {
+				sprintf(total_bytes_value, "%d bytes", total_bytes_count);
 			};
 			GetDlgItem(IDC_SENDED_LABEL2)->SetWindowText(sended_bytes_value);
 			GetDlgItem(IDC_RECIEVED_LABEL2)->SetWindowText(recieved_bytes_value);

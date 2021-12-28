@@ -5,6 +5,7 @@
 #include "TinelixIRC.h"
 #include "SettingsDialog.h"
 #include <locale.h>
+#include "MainWindow.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -89,22 +90,21 @@ void SettingsDialog::OnOK()
 	} else {
 		WritePrivateProfileString("Main", "MsgHistory", "Disabled", settings_path);
 	};
+	
+	MainWindow* mainwin = (MainWindow*)GetParent();
 
 	if(lng_selitemtext_2 == "Russian") {
 		if (lng_selitemtext_3 == "English") {
 			char msgboxtext[360];
 			int msgbox;
 			int text_parts;
-			text_parts = sprintf(msgboxtext, "Do you really want to change the language? Russian text may be incorrect on some Windows versions.\n\n");
-			text_parts+= sprintf(msgboxtext + text_parts, "Вы действительно хотите сменить язык? Текст на русском языке может быть некорректен на некоторых версиях Windows.");
-			msgbox = MessageBox((char*)msgboxtext, "Warning", MB_YESNO|MB_ICONEXCLAMATION);
-			if (msgbox == IDYES) {
-				WritePrivateProfileString("Main", "Language", "Russian", settings_path);
-			};
+			WritePrivateProfileString("Main", "Language", "Russian", settings_path);
 
 			file_submenu->m_hMenu = NULL;
 			file_submenu->CreatePopupMenu();
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
+			file_submenu->AppendMenu(MF_SEPARATOR);
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_STATISTICS, "Статистика");
 			file_submenu->AppendMenu(MF_SEPARATOR);
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
 			view_submenu->m_hMenu = NULL;
@@ -119,6 +119,7 @@ void SettingsDialog::OnOK()
             rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)view_submenu->m_hMenu, "Вид");
 			rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)help_submenu->m_hMenu, "Справка");
 			GetParent()->SetMenu(rus_mainmenu);
+			mainwin->irc_chat_page->GetDlgItem(IDC_SENDMSG)->SetWindowText("Отправить");
 		} else {
 			
 		};
@@ -129,6 +130,7 @@ void SettingsDialog::OnOK()
 		eng_mainmenu->m_hMenu = NULL;
 		eng_mainmenu->LoadMenu(IDR_MAINMENU);
 		GetParent()->SetMenu(eng_mainmenu);
+		mainwin->irc_chat_page->GetDlgItem(IDC_SENDMSG)->SetWindowText("Send");
 	};
 
 	delete(eng_mainmenu);
