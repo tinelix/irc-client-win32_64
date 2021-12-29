@@ -84,7 +84,7 @@ BOOL StatisticsDialog::OnInitDialog()
 		char total_bytes_value[128];
 		if(sended_bytes_count >= 1048576) {
 			sprintf(sended_bytes_value, "%.2f МБ", (double)(sended_bytes_count) / 1048576);
-		} else if(sended_bytes_count >= 1024) {
+		} else if(sended_bytes_count >= 1024 < 1048576) {
 			sprintf(sended_bytes_value, "%.2f кБ", (double)(sended_bytes_count) / 1024);
 		} else if(sended_bytes_count < 0) {
 			sprintf(sended_bytes_value, "(неизвестно)");
@@ -93,7 +93,7 @@ BOOL StatisticsDialog::OnInitDialog()
 		};
 		if(recieved_bytes_count >= 1048576) {
 			sprintf(recieved_bytes_value, "%.2f МБ", (double)(recieved_bytes_count) / 1048576);
-		} else if(recieved_bytes_count >= 1024) {
+		} else if(recieved_bytes_count >= 1024 < 1048576) {
 			sprintf(recieved_bytes_value, "%.2f кБ", (double)(recieved_bytes_count) / 1024);
 		} else if(recieved_bytes_count < 0) {
 			sprintf(recieved_bytes_value, "(неизвестно)");
@@ -102,7 +102,7 @@ BOOL StatisticsDialog::OnInitDialog()
 		};
 		if(total_bytes_count >= 1048576) {
 			sprintf(total_bytes_value, "%.2f МБ", (double)(total_bytes_count) / 1048576);
-		} else if(total_bytes_count >= 1024) {
+		} else if(total_bytes_count >= 1024 < 1048576) {
 			sprintf(total_bytes_value, "%.2f кБ", (double)(total_bytes_count) / 1024);
 		} else if(total_bytes_count < 0) {
 			sprintf(total_bytes_value, "(неизвестно)");
@@ -123,7 +123,7 @@ BOOL StatisticsDialog::OnInitDialog()
 		char total_bytes_value[128];
 		if(sended_bytes_count >= 1048576) {
 			sprintf(sended_bytes_value, "%.2f MB", (double)(sended_bytes_count) / 1048576);
-		} else if(sended_bytes_count >= 1024) {
+		} else if(sended_bytes_count >= 1024 < 1048576) {
 			sprintf(sended_bytes_value, "%.2f kB", (double)(sended_bytes_count) / 1024);
 		} else if(sended_bytes_count < 0) {
 			sprintf(sended_bytes_value, "(unknown)");
@@ -132,7 +132,7 @@ BOOL StatisticsDialog::OnInitDialog()
 		};
 		if(recieved_bytes_count >= 1048576) {
 			sprintf(recieved_bytes_value, "%.2f MB", (double)(recieved_bytes_count) / 1048576);
-		} else if(recieved_bytes_count >= 1024) {
+		} else if(recieved_bytes_count >= 1024 < 1048576) {
 			sprintf(recieved_bytes_value, "%.2f kB", (double)(recieved_bytes_count) / 1024);
 		} else if(recieved_bytes_count < 0) {
 			sprintf(recieved_bytes_value, "(unknown)");
@@ -141,7 +141,7 @@ BOOL StatisticsDialog::OnInitDialog()
 		};
 		if(total_bytes_count >= 1048576) {
 			sprintf(total_bytes_value, "%.2f MB", (double)(total_bytes_count) / 1048576);
-		} else if(total_bytes_count >= 1024) {
+		} else if(total_bytes_count >= 1024 < 1048576) {
 			sprintf(total_bytes_value, "%.2f kB", (double)(total_bytes_count) / 1024);
 		} else if(total_bytes_count < 0) {
 			sprintf(total_bytes_value, "(unknown)");
@@ -196,7 +196,7 @@ LRESULT StatisticsDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			char total_bytes_value[128];
 			if(sended_bytes_count >= 1048576) {
 				sprintf(sended_bytes_value, "%.2f МБ", (double)(sended_bytes_count) / 1048576);
-			} else if(sended_bytes_count >= 1024) {
+			} else if(sended_bytes_count >= 1024 < 1048576) {
 				sprintf(sended_bytes_value, "%.2f кБ", (double)(sended_bytes_count) / 1024);
 			} else if(sended_bytes_count < 0) {
 				sprintf(sended_bytes_value, "(неизвестно)", (double)(sended_bytes_count) / 1024);
@@ -205,7 +205,7 @@ LRESULT StatisticsDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			};
 			if(recieved_bytes_count >= 1048576) {
 				sprintf(recieved_bytes_value, "%.2f МБ", (double)(recieved_bytes_count) / 1048576);
-			} else if(recieved_bytes_count >= 1024) {
+			} else if(recieved_bytes_count >= 1024 < 1048576) {
 				sprintf(recieved_bytes_value, "%.2f кБ", (double)(recieved_bytes_count) / 1024);
 			} else if(recieved_bytes_count < 0) {
 				sprintf(recieved_bytes_value, "(неизвестно)");
@@ -214,7 +214,7 @@ LRESULT StatisticsDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			};
 			if(total_bytes_count >= 1048576) {
 				sprintf(total_bytes_value, "%.2f МБ", (double)(total_bytes_count) / 1048576);
-			} else if(total_bytes_count >= 1024) {
+			} else if(total_bytes_count >= 1024 < 1048576) {
 				sprintf(total_bytes_value, "%.2f кБ", (double)(total_bytes_count) / 1024);
 			} else if(total_bytes_count < 0) {
 				sprintf(total_bytes_value, "(неизвестно)");

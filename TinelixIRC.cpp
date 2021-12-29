@@ -45,8 +45,8 @@ BOOL IRCClient::InitInstance()
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
 
-	sprintf(version, "0.2.3 Beta for Windows");
-	sprintf(version_number, "0.2.3");
+	sprintf(version, "0.2.4 Beta for Windows");
+	sprintf(version_number, "0.2.4");
 	sprintf(stabillity_level, "Beta");
 	
 	if (GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {

@@ -318,6 +318,7 @@ void ConnectionManagerDialog::OnConnectProfileBtn()
 	};
 	if(strlen(params.quit_msg) == 0) {
 		sprintf(params.quit_msg, "Tinelix IRC Client ver. %s", application->version);
+		WritePrivateProfileString(selitemtext, "QuitMessage", params.quit_msg, exe_path);
 	};
 	params.port = atoi(port);
 	GetDlgItem(IDC_CONNECT_PROFILE_BTN)->EnableWindow(FALSE);
@@ -382,6 +383,9 @@ void ConnectionManagerDialog::OnOK()
 			file_submenu->m_hMenu = NULL;
 			file_submenu->CreatePopupMenu();
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
+			file_submenu->AppendMenu(MF_SEPARATOR);
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_STATISTICS, "Статистика");
+			file_submenu->AppendMenu(MF_SEPARATOR);
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
 			view_submenu->m_hMenu = NULL;
 			view_submenu->CreatePopupMenu();
