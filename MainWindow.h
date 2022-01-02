@@ -9,6 +9,8 @@
 #define WM_CHANGING_MSGFONT 0xAFFD
 #define WM_UPDATING_STATISTICS 0xAFFC
 #define WM_SENDING_QUIT_MESSAGE 0xAFFB
+#define WM_PARSER_SWITCH 0xAFFA
+#define WM_NOTIFYICON (WM_USER+2)
 #define WM_SOCKET_TIMER 1;
 
 #include "IRCChatPage.h"
@@ -92,6 +94,8 @@ public:
 	UINT MainWindow::SendSocketMessage(char *str);
 	void MainWindow::OnOK();
 	void MainWindow::OnCancel();
+	BOOL MainWindow::TrayMessage(DWORD dwMessage);
+	HINSTANCE parserLib;
 
 friend class IRCChatPage;
 friend class StatisticsDialog;

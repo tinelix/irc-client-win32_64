@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=StatisticsDialog
+LastClass=SettingsDialog
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TinelixIRC.h"
@@ -21,12 +21,12 @@ Resource5=IDD_CONNMAN (English (U.S.))
 Class4=ConnectionManagerDialog
 Class5=EditDialog
 Resource6=IDD_EDITTEXT (English (U.S.))
-Resource7=IDD_SETTINGSDLG (English (U.S.))
+Resource7=IDD_ABOUTDLG (English (U.S.))
 Class6=SettingsDialog
 Class7=AboutDialog
 Resource8=IDD_MAINWINDOW (English (U.S.))
 Class8=StatisticsDialog
-Resource9=IDD_ABOUTDLG (English (U.S.))
+Resource9=IDD_SETTINGSDLG (English (U.S.))
 
 [CLS:IRCClient]
 Type=0
@@ -49,7 +49,7 @@ ImplementationFile=MainWindow.cpp
 BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
-LastObject=ID_FILE_STATISTICS
+LastObject=MainWindow
 
 [CLS:IRCChatPage]
 Type=0
@@ -123,14 +123,20 @@ Control4=IDC_ENTERTEXTLABEL,static,1342308352
 [DLG:IDD_SETTINGSDLG (English (U.S.))]
 Type=1
 Class=SettingsDialog
-ControlCount=7
+ControlCount=13
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_LANGLABEL,static,1342308352
 Control4=IDC_LANGCOMBO1,combobox,1344340227
 Control5=IDC_SAVE_MSG_HISTORY,button,1342242819
 Control6=IDC_CHANGE_MSG_FONT,button,1342242816
-Control7=IDC_RESTARTREQUIRED,static,1342308353
+Control7=IDC_RESTARTREQUIRED,static,1342308352
+Control8=IDC_MINIMIZE_TO_TRAY,button,1342242819
+Control9=IDC_INTERFACE_GROUP,button,1342177287
+Control10=IDC_FUNCTIONAL_GROUP,button,1342177287
+Control11=IDC_APPEARANCE_GROUP,button,1342177287
+Control12=IDC_PARSER_GROUP,button,1342177287
+Control13=IDC_PARSER_LOAD,button,1342242816
 
 [CLS:SettingsDialog]
 Type=0
@@ -138,7 +144,7 @@ HeaderFile=SettingsDialog.h
 ImplementationFile=SettingsDialog.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDC_CHANGE_MSG_FONT
+LastObject=IDC_PARSER_LOAD
 VirtualFilter=dWC
 
 [DLG:IDD_ABOUTDLG (English (U.S.))]

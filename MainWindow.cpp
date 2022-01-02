@@ -25,9 +25,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-SOCKET sock;
-HINSTANCE parserLib;
-
 typedef void (WINAPI *cfunc) ();
 typedef void (WINAPI *ParseMessage)(char*, char*[], char*, BOOL);
 
@@ -70,6 +67,8 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // MainWindow message handlers
 
+SOCKET sock;
+
 void MainWindow::delsymbs(char *str, int begin, int lng)
 {
 	for(begin; begin < strlen(str); begin++) {
@@ -91,11 +90,15 @@ BOOL MainWindow::OnInitDialog()
 	stats_dlg = new StatisticsDialog;
 	stats_dlg->Create(StatisticsDialog::IDD, this);
 
+
 	char exe_path[MAX_PATH] = {0};
 	char dll_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+
 	TCHAR language_string[MAX_PATH] = {0};
-	
+	TCHAR mini2tray_string[MAX_PATH] = {0};
+
+
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, dll_path, MAX_PATH);
 
@@ -107,8 +110,18 @@ BOOL MainWindow::OnInitDialog()
 	strcat(dll_path, "\\parser.dll");
 
 	GetPrivateProfileString("Main", "Language", "", language_string, MAX_PATH, exe_path);
+	GetPrivateProfileString("Main", "MinimizeToTray", "Disabled", mini2tray_string, MAX_PATH, exe_path);
 
 	CString lng_selitemtext_2(language_string);
+	CString mini2tray_string_2(mini2tray_string);
+
+	if(mini2tray_string_2 == "Enabled") {
+		TrayMessage(NIM_ADD);
+	} else if (mini2tray_string_2 == "") {
+		WritePrivateProfileString("Main", "MinimizeToTray", "Disabled", exe_path);
+	} else {
+		TrayMessage(NIM_DELETE);
+	};
 
 	parsing_array = new char*[32768];
 	for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
@@ -131,6 +144,9 @@ BOOL MainWindow::OnInitDialog()
 	m_irc_tabs.GetWindowRect(&rcWindow);
 	ScreenToClient(rcWindow);
 
+	sended_bytes_count = 0;
+	recieved_bytes_count = 0;
+
 	rcClient.OffsetRect(rcWindow.left, rcWindow.top);
 
 	irc_chat_page->Create(IRCChatPage::IDD, &m_irc_tabs);
@@ -143,7 +159,7 @@ BOOL MainWindow::OnInitDialog()
 	irc_chat_page->GetDlgItem(IDC_MSGTEXT)->MoveWindow(2, page_frame_h - 24, page_frame_w - 72, 22);
 	irc_chat_page->GetDlgItem(IDC_SENDMSG)->MoveWindow(page_frame_w - 68, page_frame_h - 24, 66, 22);
 
-	TRACE("Tinelix IRC Client ver. %s\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
+	TRACE("Tinelix IRC Client ver. %s\r\nCopyright © 2021-2022 Dmitry Tretyakov (aka. Tinelix)\r\n"
 	"https:/github.com/tinelix/irc-client-for-windows\r\n\r\n", application->version);
 
 	char font_string[48] = {0};
@@ -267,7 +283,36 @@ BOOL MainWindow::OnInitDialog()
 
 void MainWindow::OnSize(UINT nType, int cx, int cy) 
 {
-	CDialog::OnSize(nType, cx, cy);
+	char exe_path[MAX_PATH] = {0};
+	char dll_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+
+	TCHAR language_string[MAX_PATH] = {0};
+	TCHAR mini2tray_string[MAX_PATH] = {0};
+
+
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	GetModuleFileName(NULL, dll_path, MAX_PATH);
+
+	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
+
+	strcat(exe_path, "\\settings.ini");	// add settings filename
+
+	strcat(dll_path, "\\parser.dll");
+
+	GetPrivateProfileString("Main", "MinimizeToTray", "", mini2tray_string, MAX_PATH, exe_path);
+
+	CString mini2tray_string_2(mini2tray_string);
+
+	
+	if(nType == SIZE_MINIMIZED && mini2tray_string_2 == "Enabled"){
+		ShowWindow(SW_HIDE);
+	}
+	else{
+		CDialog::OnSize(nType, cx, cy);
+	};
+	
 	CRect rcClient, rcWindow;
 
 	if(m_irc_tabs.m_hWnd == NULL || irc_chat_page->m_hWnd == NULL) {
@@ -460,7 +505,9 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 		return;
 	};
 	try {
+		mainwin->TrayMessage(NIM_DELETE);
 		mainwin->IsConnected = TRUE;
+		mainwin->TrayMessage(NIM_ADD);
 	} catch(...) {
 
 	};
@@ -594,7 +641,9 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	ident_sending_parts += sprintf(ident_sending + ident_sending_parts, "%s :", params.nickname);
 	ident_sending_parts += sprintf(ident_sending + ident_sending_parts, "%s\r\n", params.realname);
 	status = send(sock, ident_sending, strlen(ident_sending), 0);
-	sended_bytes_count += status;
+	if(status != SOCKET_ERROR && status > 0) {
+		sended_bytes_count = sended_bytes_count + status;
+	};
 	IRC_STATS irc_stats;
 	irc_stats.recieved_bytes = recieved_bytes_count;
 	irc_stats.sended_bytes = sended_bytes_count;
@@ -604,7 +653,9 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	nick_sending_parts = sprintf(nick_sending, "NICK %s\n", params.nickname);
 	mainwin->irc_chat_page->GetDlgItem(IDC_MSGTEXT)->EnableWindow(TRUE);
 	status = send(sock, nick_sending, strlen(nick_sending), 0);
-	sended_bytes_count += status;
+	if(status != SOCKET_ERROR && status > 0) {
+		sended_bytes_count = sended_bytes_count + status;
+	};
 	irc_stats.recieved_bytes = recieved_bytes_count;
 	irc_stats.sended_bytes = sended_bytes_count;
 	mainwin->stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
@@ -624,7 +675,6 @@ void MainWindow::CreateConnectionThread(PARAMETERS profile_params)
 	char change_font[100];
 	sprintf(params.nickname, "%s", profile_params.nickname);
 	sprintf(params.reserve_nickname, "%s", profile_params.reserve_nickname);
-	sprintf(params.nickname, "%s", profile_params.nickname);
 	sprintf(params.server, "%s", profile_params.server);
 	params.port = profile_params.port;
 	sprintf(params.quit_msg, "%s", profile_params.quit_msg);
@@ -654,7 +704,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				int status;
 				char sock_buffer[32768] = {0};
 				status = recv((SOCKET)wParam, (char*) &sock_buffer, 32767, 0);
-				recieved_bytes_count += status;
+				recieved_bytes_count = recieved_bytes_count + status;
 				IRC_STATS irc_stats;
 				irc_stats.recieved_bytes = recieved_bytes_count;
 				irc_stats.sended_bytes = sended_bytes_count;
@@ -724,7 +774,13 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						int pong_index;
 						sprintf(pong_msg, "PONG %s\r\n", new_line_splitter[i].Right(strlen(new_line_splitter[i]) - 5));
 						status = send((SOCKET)wParam, pong_msg, strlen(pong_msg), 0);
-						sended_bytes_count += status;
+						if(status != SOCKET_ERROR && status > 0) {
+							sended_bytes_count = sended_bytes_count + status;
+						};
+						IRC_STATS irc_stats;
+						irc_stats.recieved_bytes = recieved_bytes_count;
+						irc_stats.sended_bytes = sended_bytes_count;
+						stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 						pong = pong_msg;
 						i = new_line_splitter.GetSize();
 					} else {
@@ -791,10 +847,47 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	} else if(message == WM_SENDING_SOCKET_MESSAGE) {
 		char *text = (char*)wParam;
 		int status = MainWindow::SendSocketMessage(text);
+		if(status != SOCKET_ERROR && status > 0) {
+			sended_bytes_count = sended_bytes_count + status;
+		};
+		IRC_STATS irc_stats;
+		irc_stats.recieved_bytes = recieved_bytes_count;
+		irc_stats.sended_bytes = sended_bytes_count;
+		stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 	} else if(message == WM_SENDING_QUIT_MESSAGE) {
 		char quit_msg[640];
 		sprintf(quit_msg, "QUIT %s\r\n", params.quit_msg);
 		int status = MainWindow::SendSocketMessage(quit_msg);
+	} else if(message == WM_NOTIFYICON && lParam == WM_LBUTTONDBLCLK && (wParam == IDR_TRAY || wParam == IDR_TRAY_NC)) {\
+		ShowWindow(SW_NORMAL);
+		SetForegroundWindow();
+		SetFocus();
+	} else if(message == WM_PARSER_SWITCH) {
+		char *args = (char*)wParam;
+		char exe_path[MAX_PATH] = {0};
+		char dll_path[MAX_PATH] = {0};
+		char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+
+		TCHAR language_string[MAX_PATH] = {0};
+		TCHAR mini2tray_string[MAX_PATH] = {0};
+
+		GetModuleFileName(NULL, exe_path, MAX_PATH);
+		GetModuleFileName(NULL, dll_path, MAX_PATH);
+
+		MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+		MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
+
+		strcat(dll_path, "\\parser.dll");
+		
+		if(strcmp(args, "io") == 0 && parserLib == NULL) {
+			parserLib = (HINSTANCE)malloc(sizeof(HINSTANCE));
+			parserLib = LoadLibrary(dll_path);
+			TRACE("Loaded!\r\n");
+		} else if(strcmp(args, "io") == 0) {
+			FreeLibrary(parserLib);
+			parserLib = NULL;
+			TRACE("Unloaded!\r\n");
+		};
 	};
 	return CDialog::WindowProc(message, wParam, lParam);
 }
@@ -816,7 +909,9 @@ BOOL MainWindow::DestroyWindow()
 UINT MainWindow::SendSocketMessage(char *str)
 {
 	int status = send(sock, str, strlen(str), 0);
-	sended_bytes_count += status;
+	if(status != SOCKET_ERROR && status > 0) {
+		sended_bytes_count += status;
+	};
 	IRC_STATS irc_stats;
 	irc_stats.recieved_bytes = recieved_bytes_count;
 	irc_stats.sended_bytes = sended_bytes_count;
@@ -873,6 +968,7 @@ void MainWindow::OnClose()
 		TRACE("Sending quit message...\r\n");
 		SendSocketMessage(quit_msg);
 	};
+	TrayMessage(NIM_DELETE);
 	EndDialog(NULL);
 	CDialog::OnClose();
 }
@@ -912,3 +1008,31 @@ void MainWindow::OnFileStatistics()
 	stats_dlg->ShowWindow(SW_SHOW);
 	stats_dlg->SetForegroundWindow();
 }
+
+BOOL MainWindow::TrayMessage(DWORD dwMessage)
+  {
+
+  CString sTip("Tinelix IRC Client");
+  NOTIFYICONDATA tnd;
+  tnd.cbSize = sizeof(NOTIFYICONDATA);
+  tnd.hWnd = m_hWnd;
+  if(IsConnected == TRUE) {
+	tnd.uID = IDR_TRAY;
+  } else {
+	tnd.uID = IDR_TRAY_NC;
+  };
+  tnd.uFlags = NIF_MESSAGE|NIF_ICON;
+  tnd.uCallbackMessage = WM_NOTIFYICON;
+  tnd.uFlags = NIF_MESSAGE|NIF_ICON|NIF_TIP;
+  if(IsConnected == TRUE) {
+	VERIFY( tnd.hIcon = LoadIcon(AfxGetInstanceHandle(),
+                               MAKEINTRESOURCE (IDR_TRAY)));
+  } else {
+	VERIFY( tnd.hIcon = LoadIcon(AfxGetInstanceHandle(),
+                               MAKEINTRESOURCE (IDR_TRAY_NC)));
+  };
+  lstrcpyn(tnd.szTip, (LPCTSTR)sTip, sizeof(tnd.szTip));
+
+  return Shell_NotifyIcon(dwMessage, &tnd);
+
+ }

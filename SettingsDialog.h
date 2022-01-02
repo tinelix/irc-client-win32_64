@@ -5,6 +5,7 @@
 // SettingsDialog dialog
 
 #define WM_CHANGING_MSGFONT 0xAFFD
+#define WM_PARSER_SWITCH 0xAFFA
 
 class SettingsDialog : public CDialog
 {
@@ -33,6 +34,7 @@ protected:
 	virtual void OnOK();
 	afx_msg void OnChangeMsgFont();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnParserLoad();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:

@@ -317,7 +317,7 @@ void ConnectionManagerDialog::OnConnectProfileBtn()
 		sprintf(params.realname, "Member");
 	};
 	if(strlen(params.quit_msg) == 0) {
-		sprintf(params.quit_msg, "Tinelix IRC Client ver. %s", application->version);
+		sprintf(params.quit_msg, "Tinelix IRC Client ver. %s (%s)", application->version, application->build_date);
 		WritePrivateProfileString(selitemtext, "QuitMessage", params.quit_msg, exe_path);
 	};
 	params.port = atoi(port);

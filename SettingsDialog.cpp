@@ -38,6 +38,7 @@ void SettingsDialog::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(SettingsDialog, CDialog)
 	//{{AFX_MSG_MAP(SettingsDialog)
 	ON_BN_CLICKED(IDC_CHANGE_MSG_FONT, OnChangeMsgFont)
+	ON_BN_CLICKED(IDC_PARSER_LOAD, OnParserLoad)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -56,6 +57,7 @@ void SettingsDialog::OnOK()
 	char selitemtext[80];
 	CComboBox* cb = (CComboBox*)GetDlgItem(IDC_LANGCOMBO1);
 	CButton* msg_history_checkbox = (CButton*)GetDlgItem(IDC_SAVE_MSG_HISTORY);
+	CButton* minimize_to_tray_checkbox = (CButton*)GetDlgItem(IDC_MINIMIZE_TO_TRAY);
 	int selindex = cb->GetCurSel();
 	cb->GetLBText(selindex, selitemtext);
 	CString lng_selitemtext_2(selitemtext);
@@ -85,13 +87,22 @@ void SettingsDialog::OnOK()
 	help_submenu = new CMenu;
 	view_submenu = new CMenu;
 
+	MainWindow* mainwin = (MainWindow*)GetParent();
+
+	if(minimize_to_tray_checkbox->GetCheck() == 1) {
+		WritePrivateProfileString("Main", "MinimizeToTray", "Enabled", settings_path);
+		mainwin->TrayMessage(NIM_ADD);
+	} else {
+		WritePrivateProfileString("Main", "MinimizeToTray", "Disabled", settings_path);
+		mainwin->TrayMessage(NIM_DELETE);
+	};
+
 	if(msg_history_checkbox->GetCheck() == 1) {
 		WritePrivateProfileString("Main", "MsgHistory", "Enabled", settings_path);
 	} else {
 		WritePrivateProfileString("Main", "MsgHistory", "Disabled", settings_path);
 	};
 	
-	MainWindow* mainwin = (MainWindow*)GetParent();
 
 	if(lng_selitemtext_2 == "Russian") {
 		if (lng_selitemtext_3 == "English") {
@@ -196,33 +207,69 @@ BOOL SettingsDialog::OnInitDialog()
 
 	TCHAR language_string[MAX_PATH] = {0};
 	TCHAR msg_history_string[MAX_PATH] = {0};
+	TCHAR mini2tray_string[MAX_PATH] = {0};
 	
+	MainWindow* mainwin = (MainWindow*)GetParent();
+	MainWindow* mainwin_2 = (MainWindow*)AfxGetApp()->GetMainWnd();
+	IRCClient* application = (IRCClient*)AfxGetApp();
+
 	try {
 		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 		GetPrivateProfileString("Main", "MsgHistory", "Enabled", msg_history_string, MAX_PATH, exe_path);
+		GetPrivateProfileString("Main", "MinimizeToTray", "Disabled", mini2tray_string, MAX_PATH, exe_path);
 		CComboBox *language_combo = (CComboBox*)GetDlgItem(IDC_LANGCOMBO1);
 		CButton* msg_history_checkbox = (CButton*)GetDlgItem(IDC_SAVE_MSG_HISTORY);
+		CButton* mini2tray_checkbox = (CButton*)GetDlgItem(IDC_MINIMIZE_TO_TRAY);
 		language_combo->SelectString(NULL, language_string);
 		mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
 		0, 0, "MS Sans Serif");
 
 		CString lng_selitemtext_2(language_string);
 		CString msg_history_string2(msg_history_string);
+		CString mini2tray_string2(mini2tray_string);
 		
 		if (lng_selitemtext_2 == "Russian") {
 			GetDlgItem(IDCANCEL)->SetWindowText("Отмена");
+			GetDlgItem(IDC_INTERFACE_GROUP)->SetWindowText("Интерфейс");
+			GetDlgItem(IDC_FUNCTIONAL_GROUP)->SetWindowText("Функционал");
+			GetDlgItem(IDC_APPEARANCE_GROUP)->SetWindowText("Внешний вид");
             GetDlgItem(IDC_LANGLABEL)->SetWindowText("Язык (Language):");
             GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetWindowText("Сохранять историю сообщений");
+			GetDlgItem(IDC_MINIMIZE_TO_TRAY)->SetWindowText("Сворачивать в область уведомлений (трей)");
+			//GetDlgItem(IDC_PARSER_SETTINGS)->SetWindowText("Настройки");
+			GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Загрузить");
+			//GetDlgItem(IDC_PARSER_ABOUT)->SetWindowText("О парсере...");
+			GetDlgItem(IDC_APPEARANCE_GROUP)->SetWindowText("Внешний вид");
 			GetDlgItem(IDC_CHANGE_MSG_FONT)->SetWindowText("Сменить шрифт...");
-			GetDlgItem(IDC_RESTARTREQUIRED)->SetWindowText("(необх. перезапуск)");
+			GetDlgItem(IDC_RESTARTREQUIRED)->SetWindowText("(необходим перезапуск)");
             SetWindowText("Настройки");
 		} else {
 			GetDlgItem(IDCANCEL)->SetWindowText("Cancel");
+			GetDlgItem(IDC_INTERFACE_GROUP)->SetWindowText("Interface");
+			GetDlgItem(IDC_FUNCTIONAL_GROUP)->SetWindowText("Functional");
+			GetDlgItem(IDC_APPEARANCE_GROUP)->SetWindowText("Appearance");
             GetDlgItem(IDC_LANGLABEL)->SetWindowText("Language:");
             GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetWindowText("Save messages history");
+			GetDlgItem(IDC_MINIMIZE_TO_TRAY)->SetWindowText("Minimize to tray");
+			//GetDlgItem(IDC_PARSER_SETTINGS)->SetWindowText("Settings");
+			GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Load");
+			//GetDlgItem(IDC_PARSER_ABOUT)->SetWindowText("About Parser...");
 			GetDlgItem(IDC_CHANGE_MSG_FONT)->SetWindowText("Change font...");
 			GetDlgItem(IDC_RESTARTREQUIRED)->SetWindowText("(restart required)");
             SetWindowText("Settings");
+		};
+		if(mainwin_2->parserLib) {
+			if(lng_selitemtext_2 == "Russian") {
+				GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Выгрузить");	
+			} else {
+				GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Unload");
+			};
+		} else {
+			if(lng_selitemtext_2 == "Russian") {
+				GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Загрузить");	
+			} else {
+				GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Load");
+			};
 		};
 		
 		if(msg_history_string2 == "Enabled") {
@@ -230,10 +277,64 @@ BOOL SettingsDialog::OnInitDialog()
 		} else {
 			msg_history_checkbox->SetCheck(0);
 		};
+
+		if(mini2tray_string2 == "Enabled") {
+			mini2tray_checkbox->SetCheck(1);	
+		} else {
+			mini2tray_checkbox->SetCheck(0);
+		};
 	} catch(...) {
 	
 	};
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
+}
+
+void SettingsDialog::OnParserLoad() 
+{
+	char exe_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	char dll_path[MAX_PATH] = {0};
+	
+	GetModuleFileName(NULL, exe_path, MAX_PATH); 
+	GetModuleFileName(NULL, dll_path, MAX_PATH);
+
+	SettingsDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	SettingsDialog::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
+
+	strcat(exe_path, "\\settings.ini");	// add settings filename
+	strcat(dll_path, "\\parser.dll");
+
+	TCHAR language_string[MAX_PATH] = {0};
+	TCHAR msg_history_string[MAX_PATH] = {0};
+	TCHAR mini2tray_string[MAX_PATH] = {0};
+	
+	MainWindow* mainwin = (MainWindow*)GetParent();
+	MainWindow* mainwin_2 = (MainWindow*)AfxGetApp()->GetMainWnd();
+	IRCClient* application = (IRCClient*)AfxGetApp();
+
+	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
+	GetPrivateProfileString("Main", "MsgHistory", "Enabled", msg_history_string, MAX_PATH, exe_path);
+	GetPrivateProfileString("Main", "MinimizeToTray", "Disabled", mini2tray_string, MAX_PATH, exe_path);
+	CString lng_selitemtext_2(language_string);
+	CString msg_history_string2(msg_history_string);
+	CString mini2tray_string2(mini2tray_string);
+	char args[12];
+	sprintf(args, "io");
+	mainwin_2->SendMessage(WM_PARSER_SWITCH, (WPARAM)args, NULL);
+	if(mainwin_2->parserLib) {
+		if(lng_selitemtext_2 == "Russian") {
+			GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Выгрузить");	
+		} else {
+			GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Unload");
+		};
+	} else {
+		if(lng_selitemtext_2 == "Russian") {
+			GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Загрузить");	
+		} else {
+			GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Load");
+		};
+	};
+	
 }

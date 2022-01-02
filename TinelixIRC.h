@@ -19,6 +19,7 @@ public:
 	char version[64];
 	char version_number[6];
 	char stabillity_level[6];
+	char build_date[32];
 
 // Overrides
 	// ClassWizard generated virtual function overrides
