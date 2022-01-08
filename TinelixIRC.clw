@@ -7,10 +7,10 @@ LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TinelixIRC.h"
 
-ClassCount=8
+ClassCount=9
 Class1=IRCClient
 
-ResourceCount=9
+ResourceCount=10
 Resource2=IDR_MAINMENU
 Resource1=IDR_MAINFRAME
 Class2=MainWindow
@@ -27,6 +27,8 @@ Class7=AboutDialog
 Resource8=IDD_MAINWINDOW (English (U.S.))
 Class8=StatisticsDialog
 Resource9=IDD_SETTINGSDLG (English (U.S.))
+Class9=ParserSettingsDialog
+Resource10=IDD_PARSER_S (English (U.S.))
 
 [CLS:IRCClient]
 Type=0
@@ -123,7 +125,7 @@ Control4=IDC_ENTERTEXTLABEL,static,1342308352
 [DLG:IDD_SETTINGSDLG (English (U.S.))]
 Type=1
 Class=SettingsDialog
-ControlCount=13
+ControlCount=14
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_LANGLABEL,static,1342308352
@@ -137,6 +139,7 @@ Control10=IDC_FUNCTIONAL_GROUP,button,1342177287
 Control11=IDC_APPEARANCE_GROUP,button,1342177287
 Control12=IDC_PARSER_GROUP,button,1342177287
 Control13=IDC_PARSER_LOAD,button,1342242816
+Control14=IDC_PARSER_SETTINGS,button,1342242816
 
 [CLS:SettingsDialog]
 Type=0
@@ -144,7 +147,7 @@ HeaderFile=SettingsDialog.h
 ImplementationFile=SettingsDialog.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDC_PARSER_LOAD
+LastObject=IDC_PARSER_SETTINGS
 VirtualFilter=dWC
 
 [DLG:IDD_ABOUTDLG (English (U.S.))]
@@ -190,4 +193,22 @@ BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
 LastObject=StatisticsDialog
+
+[DLG:IDD_PARSER_S (English (U.S.))]
+Type=1
+ControlCount=5
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_PARSER_GROUP,button,1342177287
+Control4=IDC_SHOW_MSGTIME,button,1342242819
+Control5=IDC_TIMESTAMPS_POS,combobox,1344340227
+
+[CLS:ParserSettingsDialog]
+Type=0
+HeaderFile=ParserSettingsDialog.h
+ImplementationFile=ParserSettingsDialog.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=IDC_SHOW_MSGTIME
+VirtualFilter=dWC
 

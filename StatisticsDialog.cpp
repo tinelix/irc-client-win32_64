@@ -60,8 +60,8 @@ BOOL StatisticsDialog::OnInitDialog()
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, dll_path, MAX_PATH);
 
-	StatisticsDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
-	StatisticsDialog::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
+	*(strrchr(dll_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 

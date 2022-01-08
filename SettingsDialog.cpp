@@ -6,6 +6,7 @@
 #include "SettingsDialog.h"
 #include <locale.h>
 #include "MainWindow.h"
+#include "ParserSettingsDialog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -39,6 +40,7 @@ BEGIN_MESSAGE_MAP(SettingsDialog, CDialog)
 	//{{AFX_MSG_MAP(SettingsDialog)
 	ON_BN_CLICKED(IDC_CHANGE_MSG_FONT, OnChangeMsgFont)
 	ON_BN_CLICKED(IDC_PARSER_LOAD, OnParserLoad)
+	ON_BN_CLICKED(IDC_PARSER_SETTINGS, OnParserSettings)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -67,7 +69,7 @@ void SettingsDialog::OnOK()
 	char settings_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, settings_path, MAX_PATH); 
-	SettingsDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, MAX_PATH); // deleting EXE filename
+	*(strrchr(settings_path, '\\')+1)='\0';
 	strcat(settings_path, "\\settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
 		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION);
@@ -160,7 +162,7 @@ void SettingsDialog::OnChangeMsgFont()
 		char exe_path[MAX_PATH] = {0};
 		char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 		GetModuleFileName(NULL, exe_path, MAX_PATH);  
-		SettingsDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+		*(strrchr(exe_path, '\\')+1)='\0';
 		strcat(exe_path, "\\settings.ini");
 		LOGFONT logfont;
 		CFontDialog fontdlg(&logfont);
@@ -201,7 +203,7 @@ BOOL SettingsDialog::OnInitDialog()
 
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 
-	SettingsDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 
@@ -236,7 +238,7 @@ BOOL SettingsDialog::OnInitDialog()
             GetDlgItem(IDC_LANGLABEL)->SetWindowText("Язык (Language):");
             GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetWindowText("Сохранять историю сообщений");
 			GetDlgItem(IDC_MINIMIZE_TO_TRAY)->SetWindowText("Сворачивать в область уведомлений (трей)");
-			//GetDlgItem(IDC_PARSER_SETTINGS)->SetWindowText("Настройки");
+			GetDlgItem(IDC_PARSER_SETTINGS)->SetWindowText("Настройки");
 			GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Загрузить");
 			//GetDlgItem(IDC_PARSER_ABOUT)->SetWindowText("О парсере...");
 			GetDlgItem(IDC_APPEARANCE_GROUP)->SetWindowText("Внешний вид");
@@ -251,7 +253,7 @@ BOOL SettingsDialog::OnInitDialog()
             GetDlgItem(IDC_LANGLABEL)->SetWindowText("Language:");
             GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetWindowText("Save messages history");
 			GetDlgItem(IDC_MINIMIZE_TO_TRAY)->SetWindowText("Minimize to tray");
-			//GetDlgItem(IDC_PARSER_SETTINGS)->SetWindowText("Settings");
+			GetDlgItem(IDC_PARSER_SETTINGS)->SetWindowText("Settings");
 			GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Load");
 			//GetDlgItem(IDC_PARSER_ABOUT)->SetWindowText("About Parser...");
 			GetDlgItem(IDC_CHANGE_MSG_FONT)->SetWindowText("Change font...");
@@ -336,5 +338,12 @@ void SettingsDialog::OnParserLoad()
 			GetDlgItem(IDC_PARSER_LOAD)->SetWindowText("Load");
 		};
 	};
+	
+}
+
+void SettingsDialog::OnParserSettings() 
+{
+	ParserSettingsDialog parser_settings_dlg;
+	parser_settings_dlg.DoModal();
 	
 }

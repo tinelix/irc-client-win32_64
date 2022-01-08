@@ -14,6 +14,7 @@
 #define IDD_STATISTICSDLG               140
 #define IDR_TRAY                        141
 #define IDR_TRAY_NC                     142
+#define IDD_PARSER_S                    143
 #define IDC_IRC_CHAT_TABS               1000
 #define IDC_SOCKMSGS                    1000
 #define IDC_LANGCOMBO1                  1000
@@ -48,6 +49,8 @@
 #define IDC_TOTAL_LABEL                 1013
 #define IDC_TOTAL_LABEL2                1014
 #define IDC_PARSER_GROUP                1014
+#define IDC_SHOW_MSGTIME                1015
+#define IDC_TIMESTAMPS_POS              1016
 #define IDC_WIN32S_EDITION              1020
 #define IDC_WIN32_EDITION               1020
 #define IDC_LICENSE_NOTIFICATION        1021
@@ -56,7 +59,7 @@
 #define IDC_SAVE_MSG_HISTORY            1025
 #define IDC_MINIMIZE_TO_TRAY            1026
 #define IDC_PARSER_LOAD                 1027
-#define IDC_PARSER_ABOUT                1028
+#define IDC_PARSER_SETTINGS             1028
 #define ID_HELP_ABOUT                   32771
 #define ID_VIEW_SETTINGS                32772
 #define ID_FILE_CONNECT                 32773
@@ -67,9 +70,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        143
+#define _APS_NEXT_RESOURCE_VALUE        144
 #define _APS_NEXT_COMMAND_VALUE         32776
-#define _APS_NEXT_CONTROL_VALUE         1014
+#define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

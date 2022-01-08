@@ -90,7 +90,7 @@ BOOL ConnectionManagerDialog::OnInitDialog()
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 	if (GetFileAttributes(exe_path) == 1) {
 	}; 
-	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 
@@ -140,7 +140,7 @@ BOOL ConnectionManagerDialog::OnInitDialog()
 			settings_symbol.Right(i);
 			if (settings_symbol.Find("]") != -1) {
 				IsSection = FALSE;
-				if (section.IsEmpty() == FALSE && section != "Main") {
+				if (section.IsEmpty() == FALSE && section != "Main" && section != "Parser") {
 					profiles_cb->AddString(section);
 				};
 				section = "";
@@ -201,10 +201,10 @@ void ConnectionManagerDialog::OnAddProfileBtn()
 	char exe_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	char settings[32768] = {0};
-	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	CListBox *profiles_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
-	int selindex = profiles_cb->GetCurSel(); 
-	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	int selindex = profiles_cb->GetCurSel();
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	*(strrchr(exe_path, '\\')+1)='\0';
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 	try 
 	{	
@@ -238,7 +238,7 @@ void ConnectionManagerDialog::OnAddProfileBtn()
 			settings_symbol.Right(i);
 			if (settings_symbol.Find("]") != -1) {
 				IsSection = FALSE;
-				if (section.IsEmpty() == FALSE && section != "Main") {
+				if (section.IsEmpty() == FALSE && section != "Main" && section != "Parser") {
 					profiles_cb->AddString(section);
 				};
 				section = "";
@@ -265,7 +265,7 @@ void ConnectionManagerDialog::OnChangeProfileBtn()
 
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 
-	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");
 
@@ -300,7 +300,7 @@ void ConnectionManagerDialog::OnConnectProfileBtn()
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	CListBox* profile_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
 	int selindex = profile_cb->GetCurSel(); 
-	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 	PARAMETERS params;
 	profile_cb->GetText(selindex, selitemtext);

@@ -26,7 +26,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 typedef void (WINAPI *cfunc) ();
-typedef void (WINAPI *ParseMessage)(char*, char*[], char*, BOOL);
+typedef void (WINAPI *ParseMessage)(char*, char*[], char*, BOOL, char*);
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -102,8 +102,8 @@ BOOL MainWindow::OnInitDialog()
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, dll_path, MAX_PATH);
 
-	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
-	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
+	*(strrchr(dll_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 
@@ -294,8 +294,8 @@ void MainWindow::OnSize(UINT nType, int cx, int cy)
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, dll_path, MAX_PATH);
 
-	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
-	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
+	*(strrchr(dll_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 
@@ -367,7 +367,7 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	MainWindow* mainwin = (MainWindow*)AfxGetMainWnd();
-	mainwin->delsymbs(exe_path, strlen(exe_path) - strlen(exe_name), strlen(exe_path) - strlen(exe_name)); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 	strcat(exe_path, "settings.ini");
 	char msg_history_string[80];
 	char language_string[80];
@@ -527,7 +527,7 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 		strcat(h_pch, "\\HISTORY");
 		//sprintf(mainwin->history_path, "\0C:\\HISTORY");
 		GetModuleFileName(NULL, h_pch2, MAX_PATH);
-		mainwin->delsymbs(h_pch2, strlen(h_pch2) - strlen(exe_name), strlen(h_pch2) - strlen(exe_name) - 1); // deleting EXE filename
+		*(strrchr(h_pch2, '\\')+1)='\0';
 		strcat(h_pch2, "HISTORY");
 		char current_time_ch[9];
 		time_t current_time = time(NULL);
@@ -689,16 +689,20 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 
-	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 	
 	TCHAR language_string[MAX_PATH] = {0};
 	TCHAR msg_history_string[MAX_PATH] = {0};
+	TCHAR show_msgtime_string[MAX_PATH] = {0};
+	TCHAR msgtime_pos_string[MAX_PATH] = {0};
 	//try {
 	if (message == WM_SOCKET_MESSAGE) {
+				GetPrivateProfileString("Parser", "ShowMsgTime", "Enabled", show_msgtime_string, MAX_PATH, exe_path);
 				GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 				GetPrivateProfileString("Main", "MsgHistory", "Enabled", msg_history_string, MAX_PATH, exe_path);
+				GetPrivateProfileString("Parser", "MsgTimePos", "Right", msgtime_pos_string, MAX_PATH, exe_path);
 				CString lng_selitemtext(language_string);
 				CString msg_history_string2(msg_history_string);
 				int status;
@@ -799,7 +803,15 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							ParseMessage ParseMsg;
 							ParseMsg = (ParseMessage)GetProcAddress((HMODULE)parserLib, "ParseMessage");
 							try {
-								ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE);
+								if(strcmp(show_msgtime_string, "Enabled") == 0) {
+									if(strcmp(msgtime_pos_string, "Left") == 0) {
+										ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE, "left");
+									} else {
+										ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE, "right");
+									};
+								} else {
+									ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE, "noshow");
+								};
 								CString p_msg(parsed_msg);
 								//TRACE("OUTPUT: %s\r\n", parsed_msg);
 								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
@@ -983,8 +995,8 @@ void MainWindow::OnFileStatistics()
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, dll_path, MAX_PATH);
 
-	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
-	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
+	*(strrchr(dll_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 

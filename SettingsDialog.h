@@ -35,6 +35,7 @@ protected:
 	afx_msg void OnChangeMsgFont();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnParserLoad();
+	afx_msg void OnParserSettings();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:

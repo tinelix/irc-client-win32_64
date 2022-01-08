@@ -126,8 +126,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,2,5,0
- PRODUCTVERSION 0,2,5,0
+ FILEVERSION 0,2,6,0
+ PRODUCTVERSION 0,2,6,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -142,16 +142,16 @@ BEGIN
     BEGIN
         BLOCK "040004e4"
         BEGIN
-            VALUE "Comments", "Tinelix IRC Client for Windows (Windows 9x / NT). Version 0.2.5 Beta (2022-01-02). Repository link: https://github.com/tinelix/irc-client-for-windows\0"
+            VALUE "Comments", "Tinelix IRC Client for Windows (Windows 9x / NT). Version 0.2.6 Beta (2022-01-08). Repository link: https://github.com/tinelix/irc-client-for-windows\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "Tinelix IRC Client\0"
-            VALUE "FileVersion", "0.2.5 Beta\0"
+            VALUE "FileVersion", "0.2.6 Beta\0"
             VALUE "InternalName", "Tinelix IRC Client\0"
             VALUE "LegalCopyright", "Copyright © 2021 Dmitry Tretyakov (aka. Tinelix). GNU GPL 3.0 licensed\0"
             VALUE "OriginalFilename", "tlx_irc.exe\0"
             VALUE "ProductName", "Tinelix IRC Client\0"
-            VALUE "ProductVersion", "0.2.5 Beta\0"
-            VALUE "SpecialBuild", "0.2.5 Beta (2022-01-02)\0"
+            VALUE "ProductVersion", "0.2.6 Beta\0"
+            VALUE "SpecialBuild", "0.2.6 Beta (2022-01-08)\0"
         END
     END
     BLOCK "VarFileInfo"
@@ -226,6 +226,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 75
     END
+
+    IDD_PARSER_S, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 196
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 63
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -294,7 +302,7 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Settings"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,94,144,45,14
+    DEFPUSHBUTTON   "OK",IDOK,95,144,45,14
     PUSHBUTTON      "Cancel",IDCANCEL,143,144,45,14
     LTEXT           "Language:",IDC_LANGLABEL,10,16,69,9
     COMBOBOX        IDC_LANGCOMBO1,85,13,98,64,CBS_DROPDOWNLIST | CBS_SORT | 
@@ -309,7 +317,8 @@ BEGIN
     GROUPBOX        "Functional",IDC_FUNCTIONAL_GROUP,4,34,184,40
     GROUPBOX        "Appearance",IDC_APPEARANCE_GROUP,4,110,184,30
     GROUPBOX        "Tinelix IRC Parser",IDC_PARSER_GROUP,4,77,184,30
-    PUSHBUTTON      "Load",IDC_PARSER_LOAD,10,88,172,14
+    PUSHBUTTON      "Load",IDC_PARSER_LOAD,10,88,85,14
+    PUSHBUTTON      "Settings",IDC_PARSER_SETTINGS,97,88,85,14
 END
 
 IDD_ABOUTDLG DIALOG DISCARDABLE  0, 0, 229, 185
@@ -351,6 +360,20 @@ BEGIN
     LTEXT           "Total:",IDC_TOTAL_LABEL,14,41,50,10,0,WS_EX_TRANSPARENT
     LTEXT           "0 bytes",IDC_TOTAL_LABEL2,68,41,98,10,0,
                     WS_EX_TRANSPARENT
+END
+
+IDD_PARSER_S DIALOG DISCARDABLE  0, 0, 203, 70
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Parser settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,103,49,45,14
+    PUSHBUTTON      "Cancel",IDCANCEL,151,49,45,14
+    GROUPBOX        "Tinelix IRC Parser",IDC_PARSER_GROUP,7,7,189,40
+    CONTROL         "Show message timestamps",IDC_SHOW_MSGTIME,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,13,17,176,11
+    COMBOBOX        IDC_TIMESTAMPS_POS,26,29,62,35,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
 END
 
 

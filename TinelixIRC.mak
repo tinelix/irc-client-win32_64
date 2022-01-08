@@ -32,9 +32,9 @@ NULL=nul
 ################################################################################
 # Begin Project
 # PROP Target_Last_Scanned "TinelixIRC - Win32 Debug"
-CPP=cl.exe
 RSC=rc.exe
 MTL=mktyplib.exe
+CPP=cl.exe
 
 !IF  "$(CFG)" == "TinelixIRC - Win32 Release"
 
@@ -66,6 +66,7 @@ CLEAN :
 	-@erase ".\Release\TinelixIRC.obj"
 	-@erase ".\Release\EditDialog.obj"
 	-@erase ".\Release\TinelixIRC.res"
+	-@erase ".\Release\ParserSettingsDialog.obj"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -103,6 +104,7 @@ LINK32_OBJS= \
 	"$(INTDIR)/AboutDialog.obj" \
 	"$(INTDIR)/TinelixIRC.obj" \
 	"$(INTDIR)/EditDialog.obj" \
+	"$(INTDIR)/ParserSettingsDialog.obj" \
 	"$(INTDIR)/TinelixIRC.res"
 
 "$(OUTDIR)\tlx_irc.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -142,6 +144,7 @@ CLEAN :
 	-@erase ".\Debug\AboutDialog.obj"
 	-@erase ".\Debug\StdAfx.obj"
 	-@erase ".\Debug\TinelixIRC.res"
+	-@erase ".\Debug\ParserSettingsDialog.obj"
 	-@erase ".\Debug\tlx_irc.ilk"
 	-@erase ".\Debug\tlx_irc.pdb"
 
@@ -182,6 +185,7 @@ LINK32_OBJS= \
 	"$(INTDIR)/TinelixIRC.obj" \
 	"$(INTDIR)/AboutDialog.obj" \
 	"$(INTDIR)/StdAfx.obj" \
+	"$(INTDIR)/ParserSettingsDialog.obj" \
 	"$(INTDIR)/TinelixIRC.res"
 
 "$(OUTDIR)\tlx_irc.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -273,7 +277,8 @@ DEP_CPP_MAINW=\
 	".\StatisticsDialog.h"\
 	
 NODEP_CPP_MAINW=\
-	".\parserLib"\
+	".\HISTORY"\
+	".\*(strrchr(h_pcp2, '\')+1)='\0';"\
 	
 
 "$(INTDIR)\MainWindow.obj" : $(SOURCE) $(DEP_CPP_MAINW) "$(INTDIR)"\
@@ -414,14 +419,12 @@ NODEP_CPP_EDITD=\
 # Begin Source File
 
 SOURCE=.\SettingsDialog.cpp
-
-!IF  "$(CFG)" == "TinelixIRC - Win32 Release"
-
 DEP_CPP_SETTI=\
 	".\StdAfx.h"\
 	".\TinelixIRC.h"\
 	".\SettingsDialog.h"\
 	".\MainWindow.h"\
+	".\ParserSettingsDialog.h"\
 	".\IRCChatPage.h"\
 	".\StatisticsDialog.h"\
 	
@@ -429,27 +432,6 @@ DEP_CPP_SETTI=\
 "$(INTDIR)\SettingsDialog.obj" : $(SOURCE) $(DEP_CPP_SETTI) "$(INTDIR)"\
  "$(INTDIR)\TinelixIRC.pch"
 
-
-!ELSEIF  "$(CFG)" == "TinelixIRC - Win32 Debug"
-
-DEP_CPP_SETTI=\
-	".\StdAfx.h"\
-	".\TinelixIRC.h"\
-	".\SettingsDialog.h"\
-	".\MainWindow.h"\
-	".\IRCChatPage.h"\
-	".\StatisticsDialog.h"\
-	
-NODEP_CPP_SETTI=\
-	".\MainWindow* mainwin = (MainWindow*)GetParent();"\
-	".\mainwin"\
-	
-
-"$(INTDIR)\SettingsDialog.obj" : $(SOURCE) $(DEP_CPP_SETTI) "$(INTDIR)"\
- "$(INTDIR)\TinelixIRC.pch"
-
-
-!ENDIF 
 
 # End Source File
 ################################################################################
@@ -478,6 +460,21 @@ DEP_CPP_STATI=\
 	
 
 "$(INTDIR)\StatisticsDialog.obj" : $(SOURCE) $(DEP_CPP_STATI) "$(INTDIR)"\
+ "$(INTDIR)\TinelixIRC.pch"
+
+
+# End Source File
+################################################################################
+# Begin Source File
+
+SOURCE=.\ParserSettingsDialog.cpp
+DEP_CPP_PARSE=\
+	".\StdAfx.h"\
+	".\TinelixIRC.h"\
+	".\ParserSettingsDialog.h"\
+	
+
+"$(INTDIR)\ParserSettingsDialog.obj" : $(SOURCE) $(DEP_CPP_PARSE) "$(INTDIR)"\
  "$(INTDIR)\TinelixIRC.pch"
 
 

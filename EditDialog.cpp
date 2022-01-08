@@ -79,7 +79,7 @@ void EditDialog::OnOK()
 
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 
-	EditDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");
 
@@ -98,12 +98,12 @@ void EditDialog::OnOK()
 	WritePrivateProfileString(profilename, "Port", "", exe_path);
 	WritePrivateProfileString(profilename, "QuitMessage", quit_msg, exe_path);
 
-	if(strcmp(profilename, "Main") == 0) {
+	if(strcmp(profilename, "Main") == 0 || strcmp(profilename, "Parser") == 0) {
 		try {
 			if(lng_selitemtext_2 == "Russian") {
-				MessageBox("Нельзя создавать профиль с таким именем, так как имя \"Main\" уже зарезервировано для настроек клиента.", "Ошибка", MB_OK | MB_ICONSTOP);
+				MessageBox("Нельзя создавать профиль с таким именем, так как имя \"Main\" и \"Parser\" уже зарезервировано для настроек клиента.", "Ошибка", MB_OK | MB_ICONSTOP);
 			} else {
-				MessageBox("You cannot create a profile with this name because \"Main\" is already reserved for client settings.", "Error", MB_OK | MB_ICONSTOP);
+				MessageBox("You cannot create a profile with this name because \"Main\" and \"Parser\" is already reserved for client settings.", "Error", MB_OK | MB_ICONSTOP);
 			};
 		} catch(...) {
 		

@@ -105,7 +105,7 @@ void IRCChatPage::OnSendmsg()
 
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 
-	IRCChatPage::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0'; // deleting EXE filename
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 
