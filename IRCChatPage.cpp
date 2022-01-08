@@ -564,7 +564,7 @@ void IRCChatPage::OnOK()
 	   	char msg[1024] = {0};
 		int msg_index;
 		if(strcmp(channel, "(None)") != 0) {
-	   		msg_index = sprintf(msg, "PRIVMSG %s", channel);
+			msg_index = sprintf(msg, "PRIVMSG :%s", channel);
 			msg_index += sprintf(msg + msg_index, " %s\r\n", msg_text);
 			TRACE("[%s]", msg);
 			//int status = send(sock, msg, strlen(msg), 0);
