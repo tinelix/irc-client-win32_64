@@ -8,7 +8,6 @@
 #include "EditDialog.h"
 #include <locale.h>
 
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -29,6 +28,8 @@ struct PARAMETERS
 	char quit_msg[512];
 	BOOL hide_ip;
 };
+
+InfoMessageDialog* info_msg_dlg;
 
 
 ConnectionManagerDialog::ConnectionManagerDialog(CWnd* pParent /*=NULL*/)
@@ -86,6 +87,9 @@ void ConnectionManagerDialog::SetConnectionState(BOOL value)
 BOOL ConnectionManagerDialog::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
+
+	info_msg_dlg = new InfoMessageDialog;
+	info_msg_dlg->Create(InfoMessageDialog::IDD, this);
 	
 	char exe_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
@@ -219,9 +223,6 @@ void ConnectionManagerDialog::OnAddProfileBtn()
 	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 	GetPrivateProfileString("Main", "ShowInfoMessages", "", show_infomsg, 12, exe_path);
 	CString lng_selitemtext_2(language_string);
-
-	info_msg_dlg = new InfoMessageDialog;
-	info_msg_dlg->Create(InfoMessageDialog::IDD, this);
 
 	info_msg_dlg->SetInfoMessageCode(1);
 
@@ -468,16 +469,13 @@ void ConnectionManagerDialog::OnOK()
 
 void ConnectionManagerDialog::OnDestroy() 
 {		
+	
 	CDialog::OnDestroy();
 	
 }
 
 void ConnectionManagerDialog::OnClose() 
-{
-	info_msg_dlg->DestroyWindow();
-
-	delete info_msg_dlg;
-	
+{		
 	CDialog::OnClose();
 }
 

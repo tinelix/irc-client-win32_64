@@ -34,7 +34,6 @@ protected:
 	INT ConnectionManagerDialog::GetCountLines(LPCSTR str);
 	void SetConnectionState(BOOL value);
 	BOOL IsConnected;
-	InfoMessageDialog* info_msg_dlg;
 
 	// Generated message map functions
 	//{{AFX_MSG(ConnectionManagerDialog)
