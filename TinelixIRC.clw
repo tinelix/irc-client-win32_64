@@ -2,15 +2,15 @@
 
 [General Info]
 Version=1
-LastClass=SettingsDialog
+LastClass=ConnectionManagerDialog
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TinelixIRC.h"
 
-ClassCount=9
+ClassCount=10
 Class1=IRCClient
 
-ResourceCount=10
+ResourceCount=11
 Resource2=IDR_MAINMENU
 Resource1=IDR_MAINFRAME
 Class2=MainWindow
@@ -29,6 +29,8 @@ Class8=StatisticsDialog
 Resource9=IDD_SETTINGSDLG (English (U.S.))
 Class9=ParserSettingsDialog
 Resource10=IDD_PARSER_S (English (U.S.))
+Class10=InfoMessageDialog
+Resource11=IDD_INFOMSG (English (U.S.))
 
 [CLS:IRCClient]
 Type=0
@@ -147,7 +149,7 @@ HeaderFile=SettingsDialog.h
 ImplementationFile=SettingsDialog.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDC_PARSER_SETTINGS
+LastObject=IDC_APPEARANCE_GROUP
 VirtualFilter=dWC
 
 [DLG:IDD_ABOUTDLG (English (U.S.))]
@@ -211,4 +213,20 @@ BaseClass=CDialog
 Filter=D
 LastObject=IDC_SHOW_MSGTIME
 VirtualFilter=dWC
+
+[DLG:IDD_INFOMSG (English (U.S.))]
+Type=1
+ControlCount=3
+Control1=IDOK,button,1342242817
+Control2=IDC_INFOMSG_TEXT,static,1342308352
+Control3=IDC_DONT_SHOW,button,1342242819
+
+[CLS:InfoMessageDialog]
+Type=0
+HeaderFile=InfoMessageDialog.h
+ImplementationFile=InfoMessageDialog.cpp
+BaseClass=CDialog
+Filter=D
+VirtualFilter=dWC
+LastObject=IDOK
 

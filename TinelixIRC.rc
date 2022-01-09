@@ -142,16 +142,16 @@ BEGIN
     BEGIN
         BLOCK "040004e4"
         BEGIN
-            VALUE "Comments", "Tinelix IRC Client for Windows (Windows 9x / NT). Version 0.2.7 Beta (2022-01-08). Repository link: https://github.com/tinelix/irc-client-for-windows\0"
+            VALUE "Comments", "Tinelix IRC Client for Windows (Windows 9x / NT). Version 0.2.7 Beta (2022-01-09). Repository link: https://github.com/tinelix/irc-client-for-windows\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "Tinelix IRC Client\0"
-            VALUE "FileVersion", "0.2.7 Beta\0"
+            VALUE "FileVersion", "0.2.8 Beta\0"
             VALUE "InternalName", "Tinelix IRC Client\0"
-            VALUE "LegalCopyright", "Copyright © 2021 Dmitry Tretyakov (aka. Tinelix). GNU GPL 3.0 licensed\0"
+            VALUE "LegalCopyright", "Copyright © 2021-2022 Dmitry Tretyakov (aka. Tinelix). GNU GPL 3.0 licensed\0"
             VALUE "OriginalFilename", "tlx_irc.exe\0"
             VALUE "ProductName", "Tinelix IRC Client\0"
-            VALUE "ProductVersion", "0.2.7 Beta\0"
-            VALUE "SpecialBuild", "0.2.7 Beta (2022-01-08)\0"
+            VALUE "ProductVersion", "0.2.8 Beta\0"
+            VALUE "SpecialBuild", "0.2.8 Beta (2022-01-09)\0"
         END
     END
     BLOCK "VarFileInfo"
@@ -233,6 +233,14 @@ BEGIN
         RIGHTMARGIN, 196
         TOPMARGIN, 7
         BOTTOMMARGIN, 63
+    END
+
+    IDD_INFOMSG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 217
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 149
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -374,6 +382,17 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,13,17,176,11
     COMBOBOX        IDC_TIMESTAMPS_POS,26,29,62,35,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_INFOMSG DIALOG DISCARDABLE  0, 0, 224, 156
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Information"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,171,135,46,14
+    LTEXT           "Text",IDC_INFOMSG_TEXT,7,7,210,111
+    CONTROL         "Don't show information message again",IDC_DONT_SHOW,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,119,210,12
 END
 
 

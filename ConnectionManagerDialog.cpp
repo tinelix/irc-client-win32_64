@@ -27,6 +27,7 @@ struct PARAMETERS
 	int port;
 	HWND hwnd;
 	char quit_msg[512];
+	BOOL hide_ip;
 };
 
 
@@ -55,6 +56,8 @@ BEGIN_MESSAGE_MAP(ConnectionManagerDialog, CDialog)
 	ON_BN_CLICKED(IDC_CONNECT_PROFILE_BTN, OnConnectProfileBtn)
 	ON_BN_CLICKED(IDC_DELETE_PROFILE_BTn, OnDeleteProfileBtn)
 	ON_LBN_SELCHANGE(IDC_PROFILELIST, OnSelchangeProfilelist)
+	ON_WM_DESTROY()
+	ON_WM_CLOSE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -140,7 +143,8 @@ BOOL ConnectionManagerDialog::OnInitDialog()
 			settings_symbol.Right(i);
 			if (settings_symbol.Find("]") != -1) {
 				IsSection = FALSE;
-				if (section.IsEmpty() == FALSE && section != "Main" && section != "Parser") {
+				if (section.IsEmpty() == FALSE && section != "Main" && section != "Parser"
+					&& profiles_cb->FindString(0, section) == CB_ERR) {
 					profiles_cb->AddString(section);
 				};
 				section = "";
@@ -193,6 +197,7 @@ void ConnectionManagerDialog::OnAddProfileBtn()
 {
 	EditDialog edittext;
 	edittext.DoModal();
+
 	char selitemtext[80];
 	char section[800];
 	char port[5];
@@ -206,6 +211,36 @@ void ConnectionManagerDialog::OnAddProfileBtn()
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	*(strrchr(exe_path, '\\')+1)='\0';
 	strcat(exe_path, "\\settings.ini");	// add settings filename
+	char instruction_txt[512] = {0};
+	int instruction_msgb;
+
+	char show_infomsg[12];
+	char language_string[MAX_PATH] = {0};
+	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
+	GetPrivateProfileString("Main", "ShowInfoMessages", "", show_infomsg, 12, exe_path);
+	CString lng_selitemtext_2(language_string);
+
+	info_msg_dlg = new InfoMessageDialog;
+	info_msg_dlg->Create(InfoMessageDialog::IDD, this);
+
+	info_msg_dlg->SetInfoMessageCode(1);
+
+	if(strcmp(show_infomsg, "Enabled") == 0 && lng_selitemtext_2 == "Russian") {
+		sprintf(instruction_txt, "Для начала рассмотрите, для чего нужны следующие параметры:\r\n\r\n"
+			"Nickname - основной никнейм,\r\nReserveNickname - запасной никнейм,\r\n"
+			"Password - пароль для NickServ,\r\nRealname - настоящее имя,\r\n"
+			"Server - адрес сервера,\r\n"
+			"Port - порт сервера,\r\nQuitMessage - сообщение при выходе из сервера,\r\n"
+			"HideIP - режим маскировки IP-адреса\r\n\r\nЗначения: Enabled - включен, Disabled - выключен.\r\n\r\n"
+			"Нажмите \"OK\" для открытия текстового редактора.");
+		info_msg_dlg->GetDlgItem(IDC_INFOMSG_TEXT)->SetWindowText(instruction_txt);
+		info_msg_dlg->SetWindowText("Инструкция");
+		info_msg_dlg->CenterWindow();
+		info_msg_dlg->ShowWindow(SW_SHOW);
+	} else {
+		SendMessage(WM_CLOSE_INFOMSG, NULL, NULL);
+	};
+		
 	try 
 	{	
 		int profiles_count = profiles_cb->GetCount();
@@ -238,7 +273,8 @@ void ConnectionManagerDialog::OnAddProfileBtn()
 			settings_symbol.Right(i);
 			if (settings_symbol.Find("]") != -1) {
 				IsSection = FALSE;
-				if (section.IsEmpty() == FALSE && section != "Main" && section != "Parser") {
+				if (section.IsEmpty() == FALSE && section != "Main" && section != "Parser" 
+					&& profiles_cb->FindString(0, section) == CB_ERR) {
 					profiles_cb->AddString(section);
 				};
 				section = "";
@@ -272,7 +308,6 @@ void ConnectionManagerDialog::OnChangeProfileBtn()
 	char language_string[MAX_PATH] = {0};
 	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 	CString lng_selitemtext_2(language_string);
-
 	if((UINT)ShellExecute(NULL, "open", "notepad.exe", exe_path, NULL, SW_SHOWNORMAL) <= 32) {
 		try {
 			if(lng_selitemtext_2 == "Russian") {
@@ -302,6 +337,7 @@ void ConnectionManagerDialog::OnConnectProfileBtn()
 	int selindex = profile_cb->GetCurSel(); 
 	*(strrchr(exe_path, '\\')+1)='\0';
 	strcat(exe_path, "\\settings.ini");	// add settings filename
+	char hide_ip_value[12];
 	PARAMETERS params;
 	profile_cb->GetText(selindex, selitemtext);
 	GetPrivateProfileString(selitemtext, "Server", "", params.server, 256, exe_path);
@@ -310,6 +346,7 @@ void ConnectionManagerDialog::OnConnectProfileBtn()
 	GetPrivateProfileString(selitemtext, "ReserveNickname", "", params.reserve_nickname, 80, exe_path);
 	GetPrivateProfileString(selitemtext, "Realname", "", params.realname, 80, exe_path);
 	GetPrivateProfileString(selitemtext, "QuitMessage", "", params.quit_msg, 512, exe_path);
+	GetPrivateProfileString(selitemtext, "HideIP", "", hide_ip_value, 512, exe_path);
 	if(strlen(params.realname) == 0) {
 		sprintf(params.realname, "Member");
 	};
@@ -319,6 +356,14 @@ void ConnectionManagerDialog::OnConnectProfileBtn()
 	if(strlen(params.quit_msg) == 0) {
 		sprintf(params.quit_msg, "Tinelix IRC Client ver. %s (%s)", application->version, application->build_date);
 		WritePrivateProfileString(selitemtext, "QuitMessage", params.quit_msg, exe_path);
+	};
+	if(strlen(hide_ip_value) == 0) {
+		WritePrivateProfileString(selitemtext, "HideIP", "Disabled", exe_path);
+		params.hide_ip = FALSE;
+	} else if(strcmp(hide_ip_value, "Enabled") == 0) {
+		params.hide_ip = TRUE;
+	} else {
+		params.hide_ip = FALSE;
 	};
 	params.port = atoi(port);
 	GetDlgItem(IDC_CONNECT_PROFILE_BTN)->EnableWindow(FALSE);
@@ -356,7 +401,7 @@ void ConnectionManagerDialog::OnOK()
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, settings_path, MAX_PATH);
-	ConnectionManagerDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, MAX_PATH); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 	strcat(settings_path, "\\settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
 		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION);
@@ -419,4 +464,63 @@ void ConnectionManagerDialog::OnOK()
 	delete(help_submenu);
 	
 	CDialog::OnOK();
+}
+
+void ConnectionManagerDialog::OnDestroy() 
+{		
+	CDialog::OnDestroy();
+	
+}
+
+void ConnectionManagerDialog::OnClose() 
+{
+	info_msg_dlg->DestroyWindow();
+
+	delete info_msg_dlg;
+	
+	CDialog::OnClose();
+}
+
+LRESULT ConnectionManagerDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+	char selitemtext[80];
+	char section[800];
+	char port[5];
+	char port_to_str[20];
+	char nicknames[80]; 
+	char exe_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	char settings[32768] = {0};
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	*(strrchr(exe_path, '\\')+1)='\0';
+	strcat(exe_path, "\\settings.ini");	// add settings filename
+	char instruction_txt[512] = {0};
+	int instruction_msgb;
+
+	char show_infomsg[12];
+	char language_string[MAX_PATH] = {0};
+	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
+	GetPrivateProfileString("Main", "ShowInfoMessages", "", show_infomsg, 12, exe_path);
+	CString lng_selitemtext_2(language_string);
+	
+	if(message == WM_CLOSE_INFOMSG) {
+		int code = (int)wParam;
+		if(code == 1) {
+			if(lng_selitemtext_2 == "Russian" && (UINT)ShellExecute(NULL, "open", "notepad.exe", exe_path, NULL, SW_SHOWNORMAL) <= 32) {
+				try {
+					MessageBox("Блокнот не найден. Воспользуйтесь другим редактором для изменения данного конфигурационного файла.", "Ошибка", MB_OK | MB_ICONSTOP);
+				} catch(...) {
+				
+				};
+			} else if(lng_selitemtext_2 != "Russian" && (UINT)ShellExecute(NULL, "open", "notepad.exe", exe_path, NULL, SW_SHOWNORMAL) <= 32) {
+				try {
+					MessageBox("Notepad not found. Use another editor to modify this configuration file.", "Error", MB_OK | MB_ICONSTOP);
+				} catch(...) {
+				
+				};
+			};
+		};
+	};
+	
+	return CDialog::WindowProc(message, wParam, lParam);
 }

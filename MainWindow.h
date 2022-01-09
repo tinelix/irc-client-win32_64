@@ -70,6 +70,7 @@ public:
 		int port;
 		HWND hwnd;
 		char quit_msg[512];
+		BOOL hide_ip;
 	};
 	struct IRC_STATS
 	{

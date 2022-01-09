@@ -45,14 +45,14 @@ BOOL IRCClient::InitInstance()
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
 
-	sprintf(version, "0.2.7 Beta for Windows");
-	sprintf(build_date, "January 8, 2022");
-	sprintf(version_number, "0.2.7");
+	sprintf(version, "0.2.8 Beta for Windows");
+	sprintf(build_date, "January 9, 2022");
+	sprintf(version_number, "0.2.8");
 	sprintf(stabillity_level, "Beta");
 	
 	if (GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
 		MessageBox(NULL, "This version of the program does not work on Windows 3.1x."
-			"\r\nYou can download the 0.1.5 version at "
+			"\r\nYou can download the 0.1.8 version at "
 			"https://github.com/tinelix/irc-client-for-win32s/releases", "Tinelix IRC Client", 
 			MB_ICONSTOP|MB_OK);
 		return FALSE;

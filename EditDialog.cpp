@@ -76,6 +76,7 @@ void EditDialog::OnOK()
 	char exe_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	char quit_msg[512];
+	char show_infomsg[12];
 
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 
@@ -85,6 +86,7 @@ void EditDialog::OnOK()
 
 	char language_string[MAX_PATH] = {0};
 	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
+	GetPrivateProfileString("Main", "ShowInfoMessages", "", show_infomsg, MAX_PATH, exe_path);
 	CString lng_selitemtext_2(language_string);
 	IRCClient* application = (IRCClient*)AfxGetApp();
 	
@@ -97,6 +99,7 @@ void EditDialog::OnOK()
 	WritePrivateProfileString(profilename, "Server", "", exe_path);
 	WritePrivateProfileString(profilename, "Port", "", exe_path);
 	WritePrivateProfileString(profilename, "QuitMessage", quit_msg, exe_path);
+	WritePrivateProfileString(profilename, "HideIP", "Disabled", exe_path);
 
 	if(strcmp(profilename, "Main") == 0 || strcmp(profilename, "Parser") == 0) {
 		try {
@@ -109,19 +112,7 @@ void EditDialog::OnOK()
 		
 		};
 		return;
-	};
-
-	if((UINT)ShellExecute(NULL, "open", "notepad.exe", exe_path, NULL, SW_SHOWNORMAL) <= 32) {
-		try {
-			if(lng_selitemtext_2 == "Russian") {
-				MessageBox("Блокнот не найден. Воспользуйтесь другим редактором для изменения данного конфигурационного файла.", "Ошибка", MB_OK | MB_ICONSTOP);
-			} else {
-				MessageBox("Notepad not found. Use another editor to modify this configuration file.", "Error", MB_OK | MB_ICONSTOP);
-			};
-		} catch(...) {
-		
-		};
-	};
+	};	
 	
 	CDialog::OnOK();
 }

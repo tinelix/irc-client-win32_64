@@ -97,7 +97,7 @@ BOOL MainWindow::OnInitDialog()
 
 	TCHAR language_string[MAX_PATH] = {0};
 	TCHAR mini2tray_string[MAX_PATH] = {0};
-
+	TCHAR showinfomsg_string[MAX_PATH] = {0};
 
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, dll_path, MAX_PATH);
@@ -110,10 +110,12 @@ BOOL MainWindow::OnInitDialog()
 	strcat(dll_path, "\\parser.dll");
 
 	GetPrivateProfileString("Main", "Language", "", language_string, MAX_PATH, exe_path);
-	GetPrivateProfileString("Main", "MinimizeToTray", "Disabled", mini2tray_string, MAX_PATH, exe_path);
+	GetPrivateProfileString("Main", "MinimizeToTray", "", mini2tray_string, MAX_PATH, exe_path);
+	GetPrivateProfileString("Main", "ShowInfoMessages", "", showinfomsg_string, MAX_PATH, exe_path);
 
 	CString lng_selitemtext_2(language_string);
 	CString mini2tray_string_2(mini2tray_string);
+	CString showinfomsg_string_2(showinfomsg_string);
 
 	if(mini2tray_string_2 == "Enabled") {
 		TrayMessage(NIM_ADD);
@@ -121,6 +123,10 @@ BOOL MainWindow::OnInitDialog()
 		WritePrivateProfileString("Main", "MinimizeToTray", "Disabled", exe_path);
 	} else {
 		TrayMessage(NIM_DELETE);
+	};
+
+	if (showinfomsg_string_2 == "") {
+		WritePrivateProfileString("Main", "ShowInfoMessages", "Enabled", exe_path);
 	};
 
 	parsing_array = new char*[32768];
@@ -659,6 +665,18 @@ void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params)
 	irc_stats.recieved_bytes = recieved_bytes_count;
 	irc_stats.sended_bytes = sended_bytes_count;
 	mainwin->stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
+	if(params.hide_ip == TRUE) {
+		char mode_x_sending[400];
+		int mode_x_sending_parts;
+		mode_x_sending_parts = sprintf(mode_x_sending, "MODE %s +x\n", params.nickname);
+		status = send(sock, mode_x_sending, strlen(mode_x_sending), 0);
+		if(status != SOCKET_ERROR && status > 0) {
+			sended_bytes_count = sended_bytes_count + status;
+		};
+		irc_stats.recieved_bytes = recieved_bytes_count;
+		irc_stats.sended_bytes = sended_bytes_count;
+		mainwin->stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
+	};
 	if(language_string2 == "Russian") {
 		sprintf(statusbar_text, "Готово");
 	} else {
@@ -868,7 +886,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 	} else if(message == WM_SENDING_QUIT_MESSAGE) {
 		char quit_msg[640];
-		sprintf(quit_msg, "QUIT %s\r\n", params.quit_msg);
+		sprintf(quit_msg, "QUIT :%s\r\n", params.quit_msg);
 		int status = MainWindow::SendSocketMessage(quit_msg);
 	} else if(message == WM_NOTIFYICON && lParam == WM_LBUTTONDBLCLK && (wParam == IDR_TRAY || wParam == IDR_TRAY_NC)) {\
 		ShowWindow(SW_NORMAL);
@@ -963,20 +981,41 @@ void MainWindow::OnCancel()
 
 void MainWindow::OnFileQuit() 
 {
+	char exe_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	TCHAR language_string[MAX_PATH] = {0};
+	
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+
+	*(strrchr(exe_path, '\\')+1)='\0';
+
+	strcat(exe_path, "\\settings.ini");
+	
 	if(IsConnected == 1) {
 		char quit_msg[640];
-		sprintf(quit_msg, "QUIT %s\r\n", params.quit_msg);
+		sprintf(quit_msg, "QUIT :%s\r\n", params.quit_msg);
 		TRACE("Sending quit message...\r\n");
 		SendSocketMessage(quit_msg);
 	};
+	TrayMessage(NIM_DELETE);
 	EndDialog(NULL);	
 }
 
 void MainWindow::OnClose() 
 {
+	char exe_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	TCHAR language_string[MAX_PATH] = {0};
+	
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+
+	*(strrchr(exe_path, '\\')+1)='\0';
+
+	strcat(exe_path, "\\settings.ini");
+	
 	if(IsConnected == 1) {
 		char quit_msg[640];
-		sprintf(quit_msg, "QUIT %s\r\n", params.quit_msg);
+		sprintf(quit_msg, "QUIT :%s\r\n", params.quit_msg);
 		TRACE("Sending quit message...\r\n");
 		SendSocketMessage(quit_msg);
 	};

@@ -4,6 +4,10 @@
 /////////////////////////////////////////////////////////////////////////////
 // ConnectionManagerDialog dialog
 
+#include "InfoMessageDialog.h"
+
+#define WM_CLOSE_INFOMSG 0xAFEF
+
 class ConnectionManagerDialog : public CDialog
 {
 // Construction
@@ -21,6 +25,7 @@ public:
 	//{{AFX_VIRTUAL(ConnectionManagerDialog)
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -29,6 +34,7 @@ protected:
 	INT ConnectionManagerDialog::GetCountLines(LPCSTR str);
 	void SetConnectionState(BOOL value);
 	BOOL IsConnected;
+	InfoMessageDialog* info_msg_dlg;
 
 	// Generated message map functions
 	//{{AFX_MSG(ConnectionManagerDialog)
@@ -39,6 +45,8 @@ protected:
 	afx_msg void OnDeleteProfileBtn();
 	afx_msg void OnSelchangeProfilelist();
 	virtual void OnOK();
+	afx_msg void OnDestroy();
+	afx_msg void OnClose();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 friend class MainWindow;
