@@ -16,6 +16,7 @@
 #define IDR_TRAY_NC                     142
 #define IDD_PARSER_S                    143
 #define IDD_INFOMSG                     144
+#define IDD_IRCCHANNELPAGE              145
 #define IDC_IRC_CHAT_TABS               1000
 #define IDC_SOCKMSGS                    1000
 #define IDC_LANGCOMBO1                  1000
@@ -58,6 +59,7 @@
 #define IDC_WIN32_EDITION               1020
 #define IDC_LICENSE_NOTIFICATION        1021
 #define IDC_COPYRIGHT                   1022
+#define IDC_MEMBERS_LIST                1022
 #define IDC_GITHUB_REPO_LINK            1023
 #define IDC_SAVE_MSG_HISTORY            1025
 #define IDC_MINIMIZE_TO_TRAY            1026
@@ -73,9 +75,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        145
+#define _APS_NEXT_RESOURCE_VALUE        146
 #define _APS_NEXT_COMMAND_VALUE         32776
-#define _APS_NEXT_CONTROL_VALUE         1020
+#define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -1,9 +1,9 @@
-// IRCChatPage.cpp : implementation file
+// IRCChannelPage.cpp : implementation file
 //
 
 #include "stdafx.h"
 #include "TinelixIRC.h"
-#include "IRCChatPage.h"
+#include "IRCChannelPage.h"
 
 #include <stdio.h>
 #include <iostream.h>
@@ -21,82 +21,37 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// IRCChatPage dialog
+// IRCChannelPage dialog
 
 
-IRCChatPage::IRCChatPage(CWnd* pParent /*=NULL*/)
-	: CDialog(IRCChatPage::IDD, pParent)
+IRCChannelPage::IRCChannelPage(CWnd* pParent /*=NULL*/)
+	: CDialog(IRCChannelPage::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(IRCChatPage)
+	//{{AFX_DATA_INIT(IRCChannelPage)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 }
 
 
-void IRCChatPage::DoDataExchange(CDataExchange* pDX)
+void IRCChannelPage::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(IRCChatPage)
+	//{{AFX_DATA_MAP(IRCChannelPage)
 		// NOTE: the ClassWizard will add DDX and DDV calls here
 	//}}AFX_DATA_MAP
 }
 
 
-BEGIN_MESSAGE_MAP(IRCChatPage, CDialog)
-	//{{AFX_MSG_MAP(IRCChatPage)
-	ON_WM_SHOWWINDOW()
-	ON_WM_SIZE()
-	ON_EN_CHANGE(IDC_MSGTEXT, OnChangeMsgtext)
+BEGIN_MESSAGE_MAP(IRCChannelPage, CDialog)
+	//{{AFX_MSG_MAP(IRCChannelPage)
 	ON_BN_CLICKED(IDC_SENDMSG, OnSendmsg)
-	ON_WM_CLOSE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// IRCChatPage message handlers
+// IRCChannelPage message handlers
 
-//void IRCChatPage::delsymbs(char *str, int begin, int lng)
-//{
-	//for(begin; begin < strlen(str); begin++) {
-		//*(str + begin) = 0;	
-	//};
-//};
-
-void IRCChatPage::delsymbs(char *str, int begin, int lng)
-{
-	for(begin; begin < strlen(str); begin++) {
-		*(str + begin) = 0;	
-	};
-};
-
-void IRCChatPage::OnShowWindow(BOOL bShow, UINT nStatus) 
-{
-	CDialog::OnShowWindow(bShow, nStatus);
-	
-	
-}
-
-void IRCChatPage::OnSize(UINT nType, int cx, int cy) 
-{
-	
-	CDialog::OnSize(nType, cx, cy);
-	
-}
-
-void IRCChatPage::OnChangeMsgtext() 
-{
-	char msg_text[1024] = {0};
-	GetDlgItem(IDC_MSGTEXT)->GetWindowText(msg_text, 1024);
-	CString msg_txt(msg_text);
-	if (msg_txt != "" && msg_txt != " ") {
-		GetDlgItem(IDC_SENDMSG)->EnableWindow(TRUE);
-	} else {
-		GetDlgItem(IDC_SENDMSG)->EnableWindow(FALSE);
-	};
-	
-}
-
-void IRCChatPage::OnSendmsg() 
+void IRCChannelPage::OnSendmsg() 
 {
 	WPARAM wp;
 	LPARAM lp;
@@ -178,8 +133,8 @@ void IRCChatPage::OnSendmsg()
             char join_msg[1024] = {0};
             sprintf(join_msg, "JOIN %s\r\n", spaces_splitter[1]);
             sprintf(channel, "%s", spaces_splitter[1]);
-			AfxGetMainWnd()->SendMessage(WM_JOINING_TO_CHANNEL, (WPARAM)channel, (LPARAM)channel);
             AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)join_msg, (LPARAM)join_msg);
+			AfxGetMainWnd()->SendMessage(WM_JOINING_TO_CHANNEL, (WPARAM)channel, (LPARAM)channel);
         } else {
 			if(language_string_2 == "Russian") {
 				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
@@ -193,6 +148,7 @@ void IRCChatPage::OnSendmsg()
             sprintf(part_msg, "PART #%s\r\n", spaces_splitter[1]);
             sprintf(channel, "#%s", spaces_splitter[1]);
             AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)part_msg, lp);
+			AfxGetMainWnd()->SendMessage(WM_LEAVING_CHANNEL, (WPARAM)channel, (LPARAM)channel);
         } else {
 			if(language_string_2 == "Russian") {
 				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
@@ -219,6 +175,7 @@ void IRCChatPage::OnSendmsg()
             sprintf(part_msg, "PART %s\r\n", spaces_splitter[1]);
             sprintf(channel, "%s", spaces_splitter[1]);
             AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)part_msg, lp);
+			AfxGetMainWnd()->SendMessage(WM_LEAVING_CHANNEL, NULL, NULL);
         } else {
             if(language_string_2 == "Russian") {
 				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
@@ -345,35 +302,22 @@ void IRCChatPage::OnSendmsg()
 	char listing[32768] = {0};
 	sprintf(listing, "%sYou: %s\r\n", socks_msg, msg_text);
 	CString listing_2(listing);
-	GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing_2);
-	GetDlgItem(IDC_MSGTEXT)->SetWindowText("");
-	CEdit* msg_box = (CEdit*)GetDlgItem(IDC_SOCKMSGS);
-	msg_box->SetSel(0, -1);
-	msg_box->SetSel(-1);	
-}
-
-
-void IRCChatPage::OnOK() 
-{
-	IRCChatPage::OnSendmsg();
+	if(m_hWnd != NULL) {
+		GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing_2);
+		GetDlgItem(IDC_MSGTEXT)->SetWindowText("");
+		CEdit* msg_box = (CEdit*)GetDlgItem(IDC_SOCKMSGS);
+		msg_box->SetSel(0, -1);
+		msg_box->SetSel(-1);
+	};
 };
 
-void IRCChatPage::OnCancel()
+
+void IRCChannelPage::OnOK() 
+{
+	IRCChannelPage::OnSendmsg();
+};
+
+void IRCChannelPage::OnCancel()
 {
 	//CDialog::OnCancel();
 };
-
-BOOL IRCChatPage::OnInitDialog() 
-{
-	CDialog::OnInitDialog();
-	
-	sprintf(channel, "(None)");
-	
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
-}
-
-void IRCChatPage::OnClose() 
-{
-
-}

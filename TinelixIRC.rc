@@ -126,8 +126,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,2,7,0
- PRODUCTVERSION 0,2,7,0
+ FILEVERSION 0,3,0,0
+ PRODUCTVERSION 0,3,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -142,16 +142,16 @@ BEGIN
     BEGIN
         BLOCK "040004e4"
         BEGIN
-            VALUE "Comments", "Tinelix IRC Client for Windows (Windows 9x / NT). Version 0.2.7 Beta (2022-01-09). Repository link: https://github.com/tinelix/irc-client-for-windows\0"
+            VALUE "Comments", "Tinelix IRC Client for Windows (Windows 9x / NT). Version 0.3.0 Beta (2022-01-12). Repository link: https://github.com/tinelix/irc-client-for-windows\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "Tinelix IRC Client\0"
-            VALUE "FileVersion", "0.2.8 Beta\0"
+            VALUE "FileVersion", "0.3.0 Beta\0"
             VALUE "InternalName", "Tinelix IRC Client\0"
             VALUE "LegalCopyright", "Copyright © 2021-2022 Dmitry Tretyakov (aka. Tinelix). GNU GPL 3.0 licensed\0"
             VALUE "OriginalFilename", "tlx_irc.exe\0"
             VALUE "ProductName", "Tinelix IRC Client\0"
-            VALUE "ProductVersion", "0.2.8 Beta\0"
-            VALUE "SpecialBuild", "0.2.8 Beta (2022-01-09)\0"
+            VALUE "ProductVersion", "0.3.0 Beta\0"
+            VALUE "SpecialBuild", "0.3.0 Beta (2022-01-12)\0"
         END
     END
     BLOCK "VarFileInfo"
@@ -241,6 +241,14 @@ BEGIN
         RIGHTMARGIN, 217
         TOPMARGIN, 7
         BOTTOMMARGIN, 149
+    END
+
+    IDD_IRCCHANNELPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 254
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 139
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -393,6 +401,18 @@ BEGIN
     LTEXT           "Text",IDC_INFOMSG_TEXT,7,7,210,111
     CONTROL         "Don't show information message again",IDC_DONT_SHOW,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,119,210,12
+END
+
+IDD_IRCCHANNELPAGE DIALOG DISCARDABLE  0, 0, 258, 143
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_SOCKMSGS,4,4,190,119,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_READONLY | WS_VSCROLL
+    EDITTEXT        IDC_MSGTEXT,4,126,216,13,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "Send",IDC_SENDMSG,221,125,33,14,WS_DISABLED
+    CONTROL         "Tree1",IDC_MEMBERS_LIST,"SysTreeView32",WS_BORDER | 
+                    WS_TABSTOP,195,4,59,118
 END
 
 
