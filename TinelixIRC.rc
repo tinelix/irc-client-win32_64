@@ -126,8 +126,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,3,0,0
- PRODUCTVERSION 0,3,0,0
+ FILEVERSION 0,3,1,0
+ PRODUCTVERSION 0,3,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -142,16 +142,16 @@ BEGIN
     BEGIN
         BLOCK "040004e4"
         BEGIN
-            VALUE "Comments", "Tinelix IRC Client for Windows (Windows 9x / NT). Version 0.3.0 Beta (2022-01-12). Repository link: https://github.com/tinelix/irc-client-for-windows\0"
+            VALUE "Comments", "Tinelix IRC Client for Windows (Windows 9x / NT). Version 0.3.1 Beta (2022-01-13). Repository link: https://github.com/tinelix/irc-client-for-windows\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "Tinelix IRC Client\0"
-            VALUE "FileVersion", "0.3.0 Beta\0"
+            VALUE "FileVersion", "0.3.1 Beta\0"
             VALUE "InternalName", "Tinelix IRC Client\0"
             VALUE "LegalCopyright", "Copyright © 2021-2022 Dmitry Tretyakov (aka. Tinelix). GNU GPL 3.0 licensed\0"
             VALUE "OriginalFilename", "tlx_irc.exe\0"
             VALUE "ProductName", "Tinelix IRC Client\0"
-            VALUE "ProductVersion", "0.3.0 Beta\0"
-            VALUE "SpecialBuild", "0.3.0 Beta (2022-01-12)\0"
+            VALUE "ProductVersion", "0.3.1 Beta\0"
+            VALUE "SpecialBuild", "0.3.1 Beta (2022-01-13)\0"
         END
     END
     BLOCK "VarFileInfo"

@@ -878,6 +878,17 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							unparsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
 							parsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
 							sprintf(unparsed_msg, "%s", new_line_splitter[i]);
+							for (int owners_array_index = 0; owners_array_index < sizeof(owners_array); owners_array_index++) {
+								sprintf(owners_array[owners_array_index], "");
+							};
+
+							for (int operators_array_index = 0; operators_array_index < sizeof(operators_array); operators_array_index++) {
+								sprintf(operators_array[operators_array_index], "");
+							};
+
+							for (int members_array_index = 0; members_array_index < sizeof(members_array); members_array_index++) {
+								sprintf(members_array[members_array_index], "");
+							};
 							ParseMessage ParseMsg;
 							ParseNamesMessage ParseNamesMsg;
 							ParseMsg = (ParseMessage)GetProcAddress((HMODULE)parserLib, "ParseMessage");
@@ -1080,14 +1091,11 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		sprintf(quit_msg, "QUIT :%s\r\n", params.quit_msg);
 		int status = MainWindow::SendSocketMessage(quit_msg);
 	} else if(message == WM_NOTIFYICON && (wParam == IDR_TRAY || wParam == IDR_TRAY_NC)) {
-		if(lParam != 512) {
-			TRACE("LPARAM: [%d]\r\n", lParam);
-		};
 		if(lParam == WM_LBUTTONDBLCLK) {
 			ShowWindow(SW_NORMAL);
 			SetForegroundWindow();
 			SetFocus();
-		} else if(lParam == WM_RBUTTONDBLCLK) {
+		} else if(lParam == 517) {
 			char exe_path[MAX_PATH] = {0};
 			char dll_path[MAX_PATH] = {0};
 			char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
