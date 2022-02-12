@@ -1,0 +1,326 @@
+//Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""res\\TLX_IRC.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "\r\n"
+    "#include ""afxres.rc""  // Standard components\r\n"
+    "\0"
+END
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  34, 22, 229, 183
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Tinelix IRC Client"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDI_MAINFRAME,IDC_STATIC,7,7,18,20
+    DEFPUSHBUTTON   "OK",IDOK,187,164,37,14,WS_GROUP
+    LTEXT           "Tinelix IRC Client (version)",IDC_APPNAME,26,8,191,8
+    LTEXT           "Copyright \251 2021-2022 Dmitry Tretyakov (aka. Tinelix)",
+                    IDC_COPYRIGHT,7,167,178,8
+    LTEXT           "for Win32s",IDC_WIN32S_EDITION,27,18,48,9
+    GROUPBOX        "Technical Information",IDC_TECHINFO,7,37,217,27
+    LTEXT           "Windows version:",IDC_WINVER_LABEL,11,50,59,10
+    LTEXT           "n/a",IDC_WINVER,71,50,148,10
+    CTEXT           "(license information)",IDC_LICENSE_NOTIFICATION,7,68,
+                    217,75
+    RTEXT           "https://github.com/tinelix/irc-client-for-win32s",
+                    IDC_GITHUB_REPO_LINK,46,152,178,8
+END
+
+IDD_MAINWINDOW DIALOG DISCARDABLE  0, 0, 247, 137
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+CAPTION "Tinelix IRC Client"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_SOCKMSGS,0,0,246,121,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_READONLY | WS_VSCROLL
+    EDITTEXT        IDC_MSGTEXT,52,123,161,12,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "Send",IDC_SENDMSG,214,122,33,14,WS_DISABLED
+    COMBOBOX        IDC_JOINED_CHANNELS,1,123,50,43,CBS_DROPDOWNLIST | 
+                    CBS_SORT | CBS_NOINTEGRALHEIGHT | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_CONNMAN DIALOG DISCARDABLE  0, 0, 209, 157
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Initial client setup"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,122,137,39,14
+    PUSHBUTTON      "Cancel",IDCANCEL,163,137,41,14
+    LTEXT           "Language:",IDC_LANGLABEL,5,7,60,10
+    COMBOBOX        IDC_LANGCOMBO1,67,5,136,66,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Profiles",IDC_PROFILES_GROUP,5,18,199,116
+    LISTBOX         IDC_PROFILELIST,10,30,188,84,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add",IDC_ADD_PROFILE_BTN,9,117,43,13
+    PUSHBUTTON      "Connect",IDC_CONNECT_PROFILE_BTN,53,117,54,13,
+                    WS_DISABLED
+    PUSHBUTTON      "Change",IDC_CHANGE_PROFILE_BTN,108,117,47,13,
+                    WS_DISABLED
+    PUSHBUTTON      "Delete",IDC_DELETE_PROFILE_BTn,156,117,44,13,
+                    WS_DISABLED
+END
+
+IDD_EDITTEXT DIALOG DISCARDABLE  0, 0, 185, 56
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter the text"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,97,36,41,14
+    PUSHBUTTON      "Cancel",IDCANCEL,140,36,40,14
+    EDITTEXT        IDC_ENTERTEXTEDIT,5,18,175,13,ES_AUTOHSCROLL
+    LTEXT           "Type text here",IDC_ENTERTEXTLABEL,5,6,173,11
+END
+
+IDD_SETTINGS DIALOG DISCARDABLE  0, 0, 238, 65
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,144,47,45,14
+    PUSHBUTTON      "Cancel",IDCANCEL,190,47,45,14
+    LTEXT           "Language:",IDC_LANGLABEL,4,8,77,9
+    COMBOBOX        IDC_LANGCOMBO1,85,5,149,64,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Save messages history",IDC_SAVE_MSG_HISTORY,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,4,24,105,10
+    PUSHBUTTON      "Change font...",IDC_CHANGE_MSG_FONT,168,21,66,14
+    DEFPUSHBUTTON   "Parser settings",IDC_PARSER_SETTINGS,4,47,66,14
+END
+
+IDD_STATISTICS DIALOG DISCARDABLE  0, 0, 133, 73
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Statistics"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,89,54,40,14
+    GROUPBOX        "Traffic",IDC_TRAFFIC_GROUP,4,5,125,45
+    LTEXT           "Sended:",IDC_SENDED_LABEL,10,17,48,10
+    LTEXT           "0 bytes",IDC_SENDED_LABEL2,63,17,58,10
+    LTEXT           "Recieved:",IDC_RECIEVED_LABEL,10,27,48,10
+    LTEXT           "0 bytes",IDC_RECIEVED_LABEL2,63,27,58,10
+    LTEXT           "Total:",IDC_TOTAL_LABEL,10,37,48,10
+    LTEXT           "0 bytes",IDC_TOTAL_LABEL2,63,37,58,10
+END
+
+IDD_PARSER_S DIALOG DISCARDABLE  0, 0, 185, 72
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Parser settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,100,53,40,14
+    PUSHBUTTON      "Cancel",IDCANCEL,141,53,40,14
+    CONTROL         "Show message timestamps (clock)",IDC_SHOW_MSGTIME,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,16,155,13
+    COMBOBOX        IDC_TIMESTAMPS_POS,21,30,52,32,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Tinelix IRC Parser",IDC_PARSER_GROUP,4,5,177,44
+END
+
+IDD_MENTIONWND DIALOG DISCARDABLE  0, 0, 187, 55
+STYLE DS_SYSMODAL | DS_MODALFRAME | WS_POPUP
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Open",IDC_OPEN,109,37,36,14
+    PUSHBUTTON      "Close",IDCANCEL,147,37,36,14
+    LTEXT           "<member> mentioned you",IDC_TITLE,4,4,176,10
+    LTEXT           "<mentioned message>",IDC_MENTIONED_MSG,4,17,177,16
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,1,12,0
+ PRODUCTVERSION 0,1,12,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x23L
+#else
+ FILEFLAGS 0x22L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "Tinelix IRC Client for Win32s (for Windows NT / 9x / 3.1x). Version 0.1.12 Beta (2022-02-12)\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "Tinelix IRC Client for Win32s\0"
+            VALUE "FileVersion", "0.1.12\0"
+            VALUE "InternalName", "Tinelix IRC Client\0"
+            VALUE "LegalCopyright", "Copyright \251 2021-2022 Dmitry Tretyakov (aka. Tinelix)\0"
+            VALUE "OriginalFilename", "TLX_IRC.EXE\0"
+            VALUE "ProductName", "Tinelix IRC Client\0"
+            VALUE "ProductVersion", "0.1.12\0"
+            VALUE "SpecialBuild", "0.1.12 Beta (2022-02-12). Repository link: https://github.com/tinelix/irc-client-for-win32s (GNU GPL 3.0)\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+IDI_MAINFRAME           ICON    DISCARDABLE     "res\\tlx_irc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM "C&onnect...",                 ID_FILE_CONNECT
+        MENUITEM SEPARATOR
+        MENUITEM "S&tatistics",                 ID_FILE_STATISTICS
+        MENUITEM SEPARATOR
+        MENUITEM "&Quit",                       ID_FILE_QUIT
+    END
+    POPUP "View"
+    BEGIN
+        MENUITEM "Settings",                    ID_VIEW_SETTINGS
+    END
+    POPUP "Help"
+    BEGIN
+        MENUITEM "&About...",                   ID_HELP_ABOUT
+    END
+END
+
+IDR_RUS_MAINMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "Файл"
+    BEGIN
+        MENUITEM "Подключиться...",             ID_FILE_CONNECT
+        MENUITEM SEPARATOR
+        MENUITEM "Выход",                       ID_FILE_QUIT
+    END
+    POPUP "Справка"
+    BEGIN
+        MENUITEM "О программе...",              ID_HELP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_CONNMAN DLGINIT
+BEGIN
+    1000, 0x403, 8, 0
+0x6e45, 0x6c67, 0x7369, 0x0068, 
+    1000, 0x403, 8, 0
+0x7552, 0x7373, 0x6169, 0x006e, 
+    0
+END
+
+IDD_SETTINGS DLGINIT
+BEGIN
+    1000, 0x403, 8, 0
+0x6e45, 0x6c67, 0x7369, 0x0068, 
+    1000, 0x403, 8, 0
+0x7552, 0x7373, 0x6169, 0x006e, 
+    0
+END
+
+IDD_PARSER_S DLGINIT
+BEGIN
+    1033, 0x403, 1, 0
+"\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About..."
+END
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#include "res\TLX_IRC.rc2"  // non-Microsoft Visual C++ edited resources
+
+#include "afxres.rc"  // Standard components
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
