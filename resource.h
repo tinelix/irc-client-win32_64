@@ -17,6 +17,7 @@
 #define IDD_PARSER_S                    143
 #define IDD_INFOMSG                     144
 #define IDD_IRCCHANNELPAGE              145
+#define IDD_MENTIONWND                  146
 #define IDC_IRC_CHAT_TABS               1000
 #define IDC_SOCKMSGS                    1000
 #define IDC_LANGCOMBO1                  1000
@@ -61,8 +62,11 @@
 #define IDC_COPYRIGHT                   1022
 #define IDC_MEMBERS_LIST                1022
 #define IDC_GITHUB_REPO_LINK            1023
+#define IDC_OPEN                        1024
 #define IDC_SAVE_MSG_HISTORY            1025
+#define IDC_TITLE                       1025
 #define IDC_MINIMIZE_TO_TRAY            1026
+#define IDC_MENTIONED_MSG               1026
 #define IDC_PARSER_LOAD                 1027
 #define IDC_PARSER_SETTINGS             1028
 #define ID_HELP_ABOUT                   32771
@@ -75,9 +79,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        146
+#define _APS_NEXT_RESOURCE_VALUE        147
 #define _APS_NEXT_COMMAND_VALUE         32776
-#define _APS_NEXT_CONTROL_VALUE         1024
+#define _APS_NEXT_CONTROL_VALUE         1027
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -21,6 +21,7 @@
 #include "IRCChannelPage.h"
 #include "StatisticsDialog.h"
 #include "InfoMessageDialog.h"
+#include "MentionWindow.h"
 
 class MainWindow : public CDialog
 {
@@ -51,6 +52,7 @@ protected:
 	IRCChannelPage* irc_channel_page[1024];
 	InfoMessageDialog* info_msg_dlg;
 	StatisticsDialog* stats_dlg;
+	MentionWindow* mention_wnd;
 	CMenu* tray_context_menu;
 	char** parsing_array;
 	char** parsing_names_array;
@@ -94,7 +96,13 @@ public:
 		int sended_bytes;
 		int recieved_bytes;
 	};
+	struct MENTIONED_MSG
+	{
+		char mentioner[128];
+		char message[512];
+	};
 	PARAMETERS params;
+	MENTIONED_MSG mentioned_message;
 	char channel[256];
 	char exe_path[MAX_PATH];
 	char history_path[MAX_PATH];
@@ -113,6 +121,7 @@ public:
 	void MainWindow::OnOK();
 	void MainWindow::OnCancel();
 	BOOL MainWindow::TrayMessage(DWORD dwMessage);
+	void MainWindow::FreeMemory();
 	HINSTANCE parserLib;
 
 friend class IRCChatPage;

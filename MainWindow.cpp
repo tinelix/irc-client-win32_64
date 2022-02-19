@@ -94,6 +94,9 @@ BOOL MainWindow::OnInitDialog()
 	stats_dlg = new StatisticsDialog;
 	stats_dlg->Create(StatisticsDialog::IDD, this);
 
+	mention_wnd = new MentionWindow;
+	mention_wnd->Create(MentionWindow::IDD, this);
+
 	info_msg_dlg = new InfoMessageDialog;
 
 	char exe_path[MAX_PATH] = {0};
@@ -134,35 +137,7 @@ BOOL MainWindow::OnInitDialog()
 		WritePrivateProfileString("Main", "ShowInfoMessages", "Enabled", exe_path);
 	};
 
-	parsing_array = new char*[32768];
-	for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
-		parsing_array[array_index] = new char[32768];
-	};
-
-	owners_array = new char*[32768];
-	for (int owners_array_index = 0; owners_array_index < sizeof(owners_array); owners_array_index++) {
-		owners_array[owners_array_index] = new char[32768];
-		sprintf(owners_array[owners_array_index], "");
-	};
-
-	operators_array = new char*[32768];
-	for (int operators_array_index = 0; operators_array_index < sizeof(operators_array); operators_array_index++) {
-		operators_array[operators_array_index] = new char[32768];
-		sprintf(operators_array[operators_array_index], "");
-	};
-
-	members_array = new char*[32768];
-	for (int members_array_index = 0; members_array_index < sizeof(members_array); members_array_index++) {
-		members_array[members_array_index] = new char[32768];
-		sprintf(members_array[members_array_index], "");
-	};
-
-	channels = new char*[1024];
-	
-	for (int ch_array_index = 0; ch_array_index < sizeof(channels); ch_array_index++) {
-		channels[ch_array_index] = new char[128];
-		sprintf(channels[ch_array_index], "");
-	};
+	channels = (char**)malloc(1024*sizeof(char*));
 	
 
 	TC_ITEM tci;
@@ -418,6 +393,34 @@ void MainWindow::OnFileConnect()
 
 void MainWindow::ConnectionFunc(HWND hwnd, PARAMETERS params) 
 {
+	
+	owners_array = (char**)malloc(32768*sizeof(char*));
+	for (int owners_array_index = 0; owners_array_index < 32768; owners_array_index++) {
+		owners_array[owners_array_index] = (char*)malloc(32*sizeof(char));
+		sprintf(owners_array[owners_array_index], "");
+	};
+
+	operators_array = (char**)malloc(32768*sizeof(char*));
+	for (int operators_array_index = 0; operators_array_index < 32768; operators_array_index++) {
+		operators_array[operators_array_index] = (char*)malloc(32*sizeof(char));
+	};
+
+	members_array = (char**)malloc(32768*sizeof(char*));
+	for (int members_array_index = 0; members_array_index < 32768; members_array_index++) {
+		members_array[members_array_index] = (char*)malloc(32*sizeof(char));
+		sprintf(members_array[members_array_index], "");
+	};
+	
+	for (int ch_array_index = 0; ch_array_index < 1024; ch_array_index++) {
+		channels[ch_array_index] = (char*)malloc(128*sizeof(char));
+		sprintf(channels[ch_array_index], "");
+	};
+
+	parsing_array = (char**)malloc(sizeof(char*) * 1024);
+	for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
+		parsing_array[array_index] = (char*)malloc(sizeof(char) * 32768);
+	};
+	
 	char exe_path[MAX_PATH] = {0};
 	char h_pch[MAX_PATH] = {0};
 	char h_pch2[MAX_PATH] = {0};
@@ -776,8 +779,8 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				CString lng_selitemtext(language_string);
 				CString msg_history_string2(msg_history_string);
 				int status;
-				char sock_buffer[32768] = {0};
-				status = recv((SOCKET)wParam, (char*) &sock_buffer, 32767, 0);
+				char sock_buffer[4096] = {0};
+				status = recv((SOCKET)wParam, (char*) &sock_buffer, 4096, 0);
 				recieved_bytes_count = recieved_bytes_count + status;
 				IRC_STATS irc_stats;
 				irc_stats.recieved_bytes = recieved_bytes_count;
@@ -806,275 +809,306 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						MessageBox("Connection lost.", "Information", MB_OK|MB_ICONINFORMATION);
 					};
 					IsConnected = FALSE;
+					delete[] owners_array;
+					delete[] operators_array;
+					delete[] members_array;
+					delete[] parsing_array;
 					closesocket(sock);
 					AfxGetApp()->GetMainWnd()->SetWindowText("Tinelix IRC Client");
-					exit;
 				};
-				char listing[32768] = {0};
-				char previous_listing[32768] = {0};
-				int sp;
-				CString sock_buffer_str;
-				char pong_msg[400];
-				int string_index = 0;
-				int array_index_2 = 0;
-				char nwline[32768];
-				char* parsed_msg;
-				char* parsed_msg_list;
-				parsed_msg_list = (char*)malloc(sizeof(char) * 32768);
-				char* nw_token;
-				CArray<CString, CString> new_line_splitter;
-				while(AfxExtractSubString(sock_buffer_str, sock_buffer, string_index, '\n'))
-				{
-					new_line_splitter.Add(sock_buffer_str);
-					++string_index;
-				};
-				CString pong;
-				nw_token = strtok(sock_buffer, "\r\n");										   
-				while(nw_token != NULL) {
-					new_line_splitter[array_index_2++] = nw_token;
-					nw_token = strtok(NULL, "\r\n");
-				};
+				if(IsConnected == TRUE) {
+					char listing[32768] = {0};
+					char previous_listing[32768] = {0};
+					int sp;
+					CString sock_buffer_str;
+					char pong_msg[400];
+					int string_index = 0;
+					int array_index_2 = 0;
+					char nwline[32768];
+					char* parsed_msg;
+					char* parsed_msg_list;
+					parsed_msg_list = (char*)malloc(sizeof(char) * 32768);
+					char* nw_token;
+					CArray<CString, CString> new_line_splitter;
+					while(AfxExtractSubString(sock_buffer_str, sock_buffer, string_index, '\n'))
+					{
+						new_line_splitter.Add(sock_buffer_str);
+						++string_index;
+					};
+					CString pong;
+					nw_token = strtok(sock_buffer, "\r\n");										   
+					while(nw_token != NULL) {
+						new_line_splitter[array_index_2++] = nw_token;
+						nw_token = strtok(NULL, "\r\n");
+					};
 
-				int parsed_msg_index = 0;
+					int parsed_msg_index = 0;
 
-                for (int i = 0; i < new_line_splitter.GetSize(); i++) {
-					pong = "";
-					//TRACE("LINE: %s\r\n", new_line_splitter[i]);
-					if (new_line_splitter[i].Left(4) == "PING") {
-						int pong_index;
-						sprintf(pong_msg, "PONG %s\r\n", new_line_splitter[i].Right(strlen(new_line_splitter[i]) - 5));
-						status = send((SOCKET)wParam, pong_msg, strlen(pong_msg), 0);
-						if(status != SOCKET_ERROR && status > 0) {
-							sended_bytes_count = sended_bytes_count + status;
+					for (int i = 0; i < new_line_splitter.GetSize(); i++) {
+						pong = "";
+						//TRACE("LINE: %s\r\n", new_line_splitter[i]);
+						if (new_line_splitter[i].Left(4) == "PING") {
+							int pong_index;
+							sprintf(pong_msg, "PONG %s\r\n", new_line_splitter[i].Right(strlen(new_line_splitter[i]) - 5));
+							status = send((SOCKET)wParam, pong_msg, strlen(pong_msg), 0);
+							if(status != SOCKET_ERROR && status > 0) {
+								sended_bytes_count = sended_bytes_count + status;
+							};
+							IRC_STATS irc_stats;
+							irc_stats.recieved_bytes = recieved_bytes_count;
+							irc_stats.sended_bytes = sended_bytes_count;
+							stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
+							pong = pong_msg;
+							i = new_line_splitter.GetSize();
+						} else {
+							if(parserLib == NULL) {
+								int iTab = m_irc_tabs.GetCurSel();
+								TC_ITEM tci;
+								tci.mask = TCIF_PARAM;
+								m_irc_tabs.GetItem(iTab, &tci);
+								IRCChannelPage* channel_page = (IRCChannelPage *)tci.lParam;
+								if(i >= new_line_splitter.GetSize() - 1) {
+									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", new_line_splitter[i]);
+								} else {
+									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s\r\n", new_line_splitter[i]);
+								};
+								channel_page->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 32767);
+								sp = sprintf(listing, "%s", previous_listing);
+								if(strlen(previous_listing) + strlen(parsed_msg_list) < 32768) {
+									sp += sprintf(listing + sp, "%s", parsed_msg_list);
+								} else {
+									sp = sprintf(listing + sp, "%s", parsed_msg_list);
+								};
+							} else {	
+								char* unparsed_msg;
+								char* parsed_msg;
+								unparsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
+								parsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
+								for (int owners_array_index = 0; owners_array_index < 32768; owners_array_index++) {
+									sprintf(owners_array[owners_array_index], "");
+								};
+
+								for (int operators_array_index = 0; operators_array_index < 32768; operators_array_index++) {
+									sprintf(operators_array[operators_array_index], "");
+								};
+
+								for (int members_array_index = 0; members_array_index < 32768; members_array_index++) {
+									sprintf(members_array[members_array_index], "");
+								};
+								sprintf(unparsed_msg, "%s", new_line_splitter[i]);
+								ParseMessage ParseMsg;
+								ParseNamesMessage ParseNamesMsg;
+								ParseMsg = (ParseMessage)GetProcAddress((HMODULE)parserLib, "ParseMessage");
+								ParseNamesMsg = (ParseNamesMessage)GetProcAddress((HMODULE)parserLib, "ParseNamesMessage");
+								try {
+									if(strcmp(show_msgtime_string, "Enabled") == 0) {
+										if(strcmp(msgtime_pos_string, "Left") == 0) {
+											ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE, "left");
+										} else {
+											ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE, "right");
+										};
+									} else {
+										ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE, "noshow");
+									};
+									CString p_msg(parsed_msg);
+									if(strcmp(parsing_array[1], "433") == 0) {
+										char nick_msg[128];
+										sprintf(nick_msg, "NICK %s\r\n", params.reserve_nickname);
+										status = send((SOCKET)wParam, nick_msg, strlen(nick_msg), 0);
+										parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", "WARNING: We will use next nickname.\r\n");
+									} else if(strcmp(parsing_array[1], "353") == 0) {
+										sprintf(unparsed_msg, "%s", new_line_splitter[i]);
+										int owners_count = 0;
+										int operators_count = 0;
+										int members_count = 0;
+										ParseNamesMsg(unparsed_msg, parsing_array, owners_array, operators_array, members_array, owners_count, operators_count, members_count, TRUE);
+										if(parsing_array[4][0] == '#') {
+											for (int ch_array_index = 0; ch_array_index < sizeof(channels); ch_array_index++) {
+												if(strcmp(parsing_array[4], channels[ch_array_index]) == 0 && strlen(channels[ch_array_index]) > 0) {
+													TC_ITEM tci;
+													tci.mask = TCIF_PARAM;
+													m_irc_tabs.GetItem(ch_array_index + 1, &tci);
+													IRCChannelPage* channel_page = (IRCChannelPage *)tci.lParam;
+													if(channel_page->m_hWnd != NULL) {
+														CTreeCtrl* members_tree = (CTreeCtrl*)channel_page->GetDlgItem(IDC_MEMBERS_LIST);
+														HTREEITEM owners_item = 0, operators_item = 0, members_item = 0;
+														for(int owners_index = 0; owners_index < 32768; owners_index++) {
+															if(strlen(owners_array[owners_index]) > 0) {
+																owners_count = owners_count + 1;
+															};
+														};
+														for(int operators_index = 0; operators_index < 32768; operators_index++) {
+															if(strlen(operators_array[operators_index]) > 0) {
+																operators_count = operators_count + 1;
+															};
+														};
+														for(int members_index = 0; members_index < 32768; members_index++) {
+															if(strlen(members_array[members_index]) > 0) {
+																members_count = members_count + 1;
+															};
+														};
+														members_tree->DeleteAllItems();
+														char parent_name[128];
+														if(lng_selitemtext == "Russian") {
+															sprintf(parent_name, "Владельцы (%d)", owners_count);
+															owners_item = members_tree->InsertItem(parent_name, TVI_ROOT);
+														} else {
+															sprintf(parent_name, "Owners (%d)", owners_count);
+															owners_item = members_tree->InsertItem(parent_name, TVI_ROOT);
+														};
+														if(lng_selitemtext == "Russian") {
+															sprintf(parent_name, "Операторы (%d)", operators_count);
+															operators_item = members_tree->InsertItem(parent_name, TVI_ROOT);
+														} else {
+															sprintf(parent_name, "Operators (%d)", operators_count);
+															operators_item = members_tree->InsertItem(parent_name, TVI_ROOT);
+														};
+														if(lng_selitemtext == "Russian") {
+															sprintf(parent_name, "Участники (%d)", members_count);
+															members_item = members_tree->InsertItem(parent_name, TVI_ROOT);
+														} else {
+															sprintf(parent_name, "Members (%d)", members_count);
+															members_item = members_tree->InsertItem(parent_name, TVI_ROOT);
+														};
+														for(owners_index = 0; owners_index < 32768; owners_index++) {
+															if(strlen(owners_array[owners_index]) > 0) {
+																members_tree->InsertItem(owners_array[owners_index], owners_item);
+															};
+														};
+														for(operators_index = 0; operators_index < 32768; operators_index++) {
+															if(strlen(operators_array[operators_index]) > 0) {
+																members_tree->InsertItem(operators_array[operators_index], operators_item);
+																
+															};
+														};
+														for(members_index = 0; members_index < 32768; members_index++) {
+															if(strlen(members_array[members_index]) > 0) {
+																members_count++;
+																members_tree->InsertItem(members_array[members_index], members_item);
+															};
+														};
+														
+														members_tree->Expand(owners_item,TVE_EXPAND);
+														members_tree->Expand(operators_item,TVE_EXPAND);
+														members_tree->Expand(members_item,TVE_EXPAND);
+													};
+												};
+											};
+										};
+									} else if(strcmp(parsing_array[1], "PRIVMSG") == 0) {
+										MENTIONED_MSG mentioned_message;
+										CString mentioned_message_text(parsing_array[0]);
+										sprintf(mentioned_message.mentioner, "%s", mentioned_message_text);
+										int message_text_index = 0;
+										int mention_index = 0;
+										for(int array_index = 3; array_index < 20; array_index++) {
+											if(array_index == 3 && strlen(parsing_array[array_index]) > 0) {
+												message_text_index += sprintf(mentioned_message.message + message_text_index, "%s", parsing_array[array_index]);
+											} else if(array_index > 3 && strlen(parsing_array[array_index]) > 0) {
+												message_text_index += sprintf(mentioned_message.message + message_text_index, " %s", parsing_array[array_index]);
+											};
+										};
+
+										CString parsed_array_part(mentioned_message.message);
+										mention_index = parsed_array_part.Find(params.nickname);
+										char limited_parsed_array[120];
+										if(parsed_array_part.GetLength() <= 120) {
+											sprintf(mentioned_message.message, "%s", parsed_array_part);
+										} else {
+											sprintf(mentioned_message.message, "%s...", parsed_array_part.Right(parsed_array_part.GetLength() - 120));
+										};
+										if(mention_index != -1) {
+											mention_wnd->SendMessage(WM_USER_MENTION, NULL, (LPARAM)&mentioned_message);
+										};
+										TRACE(mentioned_message.message);
+									};
+									if(parsing_array[2][0] == '#') {
+										for (int ch_array_index = 0; ch_array_index < sizeof(channels); ch_array_index++) {
+											if(strcmp(parsing_array[2], channels[ch_array_index]) == 0 && strlen(channels[ch_array_index]) > 0) {
+												TC_ITEM tci;
+												tci.mask = TCIF_PARAM;
+												m_irc_tabs.GetItem(ch_array_index + 1, &tci);
+												IRCChannelPage* channel_page = (IRCChannelPage *)tci.lParam;
+												if(channel_page->m_hWnd != NULL) {
+													channel_page->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 32767);
+													sp = sprintf(listing, "%s", previous_listing);
+													if(strlen(previous_listing) + strlen(parsed_msg_list) < 32768) {
+														sp += sprintf(listing + sp, "%s", parsed_msg);
+													} else {
+														sp = sprintf(listing + sp, "%s", parsed_msg);
+													};
+													channel_page->GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
+													CEdit* msg_box = (CEdit*)channel_page->GetDlgItem(IDC_SOCKMSGS);
+													msg_box->SetSel(0, -1);
+													msg_box->SetSel(-1);
+												};
+											};
+										};
+									} else if(channels_count > 0 && strcmp(parsing_array[1], "JOIN") == 0 || strcmp(parsing_array[1], "PART") == 0 || 
+										strcmp(parsing_array[1], "NICK") == 0) { 
+										for (int ch_array_index = 0; ch_array_index < sizeof(channels); ch_array_index++) {
+											if(strlen(channels[ch_array_index]) > 0) {
+												char names_msg[160];
+												sprintf(names_msg, "NAMES #%s\r\n", channels[ch_array_index]);
+												status = send((SOCKET)wParam, names_msg, strlen(names_msg), 0);		
+											};
+										};
+									} else {
+										int iTab = m_irc_tabs.GetCurSel();
+										TC_ITEM tci;
+										tci.mask = TCIF_PARAM;
+										m_irc_tabs.GetItem(iTab, &tci);
+										IRCChannelPage* channel_page = (IRCChannelPage *)tci.lParam;
+										if(channel_page->m_hWnd != NULL) {
+											channel_page->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 32767);
+											sp = sprintf(listing, "%s", previous_listing);
+											if(strlen(previous_listing) + strlen(parsed_msg_list) < 32768) {
+												sp += sprintf(listing + sp, "%s", parsed_msg);
+											} else {
+												sp = sprintf(listing + sp, "%s", parsed_msg);
+											};
+											channel_page->GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
+											CEdit* msg_box = (CEdit*)channel_page->GetDlgItem(IDC_SOCKMSGS);
+											msg_box->SetSel(0, -1);
+											msg_box->SetSel(-1);
+										};
+									};
+								} catch(...) {
+
+								};
+
+								delete unparsed_msg;
+								delete parsed_msg;
+
+							};
 						};
-						IRC_STATS irc_stats;
-						irc_stats.recieved_bytes = recieved_bytes_count;
-						irc_stats.sended_bytes = sended_bytes_count;
-						stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
-						pong = pong_msg;
-						i = new_line_splitter.GetSize();
-					} else {
+					};
+					if(pong == "") {
+						if(msg_history_string2 == "Enabled") {
+							if(history_file_stdio.Open(history_file, CFile::modeReadWrite)) {
+								history_file_stdio.Write(listing, strlen(listing));
+								history_file_stdio.Close();
+							} else {
+								if (history_file_stdio.Open(history_file, CFile::modeReadWrite | CFile::modeCreate)) {
+									history_file_stdio.Write(listing, strlen(listing));
+									history_file_stdio.Close();
+								} else {
+								};
+							};
+						};
 						if(parserLib == NULL) {
 							int iTab = m_irc_tabs.GetCurSel();
 							TC_ITEM tci;
 							tci.mask = TCIF_PARAM;
 							m_irc_tabs.GetItem(iTab, &tci);
 							IRCChannelPage* channel_page = (IRCChannelPage *)tci.lParam;
-							if(i >= new_line_splitter.GetSize() - 1) {
-								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", new_line_splitter[i]);
-							} else {
-								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s\r\n", new_line_splitter[i]);
-							};
-							channel_page->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 32767);
-							sp = sprintf(listing, "%s", previous_listing);
-							if(strlen(previous_listing) + strlen(parsed_msg_list) < 32768) {
-								sp += sprintf(listing + sp, "%s", parsed_msg_list);
-							} else {
-								sp = sprintf(listing + sp, "%s", parsed_msg_list);
-							};
-						} else {	
-							char* unparsed_msg;
-							char* parsed_msg;
-							unparsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
-							parsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
-							sprintf(unparsed_msg, "%s", new_line_splitter[i]);
-							for (int owners_array_index = 0; owners_array_index < sizeof(owners_array); owners_array_index++) {
-								sprintf(owners_array[owners_array_index], "");
-							};
-
-							for (int operators_array_index = 0; operators_array_index < sizeof(operators_array); operators_array_index++) {
-								sprintf(operators_array[operators_array_index], "");
-							};
-
-							for (int members_array_index = 0; members_array_index < sizeof(members_array); members_array_index++) {
-								sprintf(members_array[members_array_index], "");
-							};
-							ParseMessage ParseMsg;
-							ParseNamesMessage ParseNamesMsg;
-							ParseMsg = (ParseMessage)GetProcAddress((HMODULE)parserLib, "ParseMessage");
-							ParseNamesMsg = (ParseNamesMessage)GetProcAddress((HMODULE)parserLib, "ParseNamesMessage");
-							try {
-								if(strcmp(show_msgtime_string, "Enabled") == 0) {
-									if(strcmp(msgtime_pos_string, "Left") == 0) {
-										ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE, "left");
-									} else {
-										ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE, "right");
-									};
-								} else {
-									ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE, "noshow");
-								};
-								CString p_msg(parsed_msg);
-								if(strcmp(parsing_array[1], "433") == 0) {
-									char nick_msg[128];
-									sprintf(nick_msg, "NICK %s\r\n", params.reserve_nickname);
-									status = send((SOCKET)wParam, nick_msg, strlen(nick_msg), 0);
-									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", "WARNING: We will use next nickname.\r\n");
-								} else if(strcmp(parsing_array[1], "353") == 0) {
-									sprintf(unparsed_msg, "%s", new_line_splitter[i]);
-									int owners_count = 0;
-									int operators_count = 0;
-									int members_count = 0;
-									ParseNamesMsg(unparsed_msg, parsing_array, owners_array, operators_array, members_array, owners_count, operators_count, members_count, TRUE);
-									if(parsing_array[4][0] == '#') {
-										for (int ch_array_index = 0; ch_array_index < sizeof(channels); ch_array_index++) {
-											if(strcmp(parsing_array[4], channels[ch_array_index]) == 0 && strlen(channels[ch_array_index]) > 0) {
-												TC_ITEM tci;
-												tci.mask = TCIF_PARAM;
-												m_irc_tabs.GetItem(ch_array_index + 1, &tci);
-												IRCChannelPage* channel_page = (IRCChannelPage *)tci.lParam;
-												if(channel_page->m_hWnd != NULL) {
-													CTreeCtrl* members_tree = (CTreeCtrl*)channel_page->GetDlgItem(IDC_MEMBERS_LIST);
-													HTREEITEM owners_item = 0, operators_item = 0, members_item = 0;
-													for(int owners_index = 0; owners_index < sizeof(owners_array); owners_index++) {
-														if(strlen(owners_array[owners_index]) > 0) {
-															owners_count = owners_count + 1;
-														};
-													};
-													for(int operators_index = 0; operators_index < sizeof(operators_array); operators_index++) {
-														if(strlen(operators_array[operators_index]) > 0) {
-															operators_count = operators_count + 1;
-														};
-													};
-													for(int members_index = 0; members_index < sizeof(members_array); members_index++) {
-														if(strlen(members_array[members_index]) > 0) {
-															members_count = members_count + 1;
-														};
-													};
-													members_tree->DeleteAllItems();
-													char parent_name[128];
-													if(lng_selitemtext == "Russian") {
-														sprintf(parent_name, "Владельцы (%d)", owners_count);
-														owners_item = members_tree->InsertItem(parent_name, TVI_ROOT);
-													} else {
-														sprintf(parent_name, "Owners (%d)", owners_count);
-														owners_item = members_tree->InsertItem(parent_name, TVI_ROOT);
-													};
-													if(lng_selitemtext == "Russian") {
-														sprintf(parent_name, "Операторы (%d)", operators_count);
-														operators_item = members_tree->InsertItem(parent_name, TVI_ROOT);
-													} else {
-														sprintf(parent_name, "Operators (%d)", operators_count);
-														operators_item = members_tree->InsertItem(parent_name, TVI_ROOT);
-													};
-													if(lng_selitemtext == "Russian") {
-														sprintf(parent_name, "Участники (%d)", members_count);
-														members_item = members_tree->InsertItem(parent_name, TVI_ROOT);
-													} else {
-														sprintf(parent_name, "Members (%d)", members_count);
-														members_item = members_tree->InsertItem(parent_name, TVI_ROOT);
-													};
-													for(owners_index = 0; owners_index < sizeof(owners_array); owners_index++) {
-														if(strlen(owners_array[owners_index]) > 0) {
-															members_tree->InsertItem(owners_array[owners_index], owners_item);
-														};
-													};
-													for(operators_index = 0; operators_index < sizeof(operators_array); operators_index++) {
-														if(strlen(operators_array[operators_index]) > 0) {
-															members_tree->InsertItem(operators_array[operators_index], operators_item);
-															
-														};
-													};
-													for(members_index = 0; members_index < sizeof(members_array); members_index++) {
-														if(strlen(members_array[members_index]) > 0) {
-															members_count++;
-															members_tree->InsertItem(members_array[members_index], members_item);
-														};
-													};
-													
-													members_tree->Expand(owners_item,TVE_EXPAND);
-													members_tree->Expand(operators_item,TVE_EXPAND);
-													members_tree->Expand(members_item,TVE_EXPAND);
-												};
-											};
-										};
-									};
-								};
-								if(parsing_array[2][0] == '#') {
-									for (int ch_array_index = 0; ch_array_index < sizeof(channels); ch_array_index++) {
-										if(strcmp(parsing_array[2], channels[ch_array_index]) == 0 && strlen(channels[ch_array_index]) > 0) {
-											TC_ITEM tci;
-											tci.mask = TCIF_PARAM;
-											m_irc_tabs.GetItem(ch_array_index + 1, &tci);
-											IRCChannelPage* channel_page = (IRCChannelPage *)tci.lParam;
-											if(channel_page->m_hWnd != NULL) {
-												channel_page->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 32767);
-												sp = sprintf(listing, "%s", previous_listing);
-												if(strlen(previous_listing) + strlen(parsed_msg_list) < 32768) {
-													sp += sprintf(listing + sp, "%s", parsed_msg);
-												} else {
-													sp = sprintf(listing + sp, "%s", parsed_msg);
-												};
-												channel_page->GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
-												CEdit* msg_box = (CEdit*)channel_page->GetDlgItem(IDC_SOCKMSGS);
-												msg_box->SetSel(0, -1);
-												msg_box->SetSel(-1);
-											};
-										};
-									};
-								} else if(channels_count > 0 && strcmp(parsing_array[1], "JOIN") == 0 || strcmp(parsing_array[1], "PART") == 0 || 
-									strcmp(parsing_array[1], "NICK") == 0 || strcmp(parsing_array[1], "QUIT") == 0) { 
-									for (int ch_array_index = 0; ch_array_index < sizeof(channels); ch_array_index++) {
-										if(strlen(channels[ch_array_index]) > 0) {
-											char names_msg[160];
-											sprintf(names_msg, "NAMES #%s\r\n", channels[ch_array_index]);
-											status = send((SOCKET)wParam, names_msg, strlen(names_msg), 0);		
-										};
-									};
-								} else {
-									int iTab = m_irc_tabs.GetCurSel();
-									TC_ITEM tci;
-									tci.mask = TCIF_PARAM;
-									m_irc_tabs.GetItem(iTab, &tci);
-									IRCChannelPage* channel_page = (IRCChannelPage *)tci.lParam;
-									if(channel_page->m_hWnd != NULL) {
-										channel_page->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 32767);
-										sp = sprintf(listing, "%s", previous_listing);
-										if(strlen(previous_listing) + strlen(parsed_msg_list) < 32768) {
-											sp += sprintf(listing + sp, "%s", parsed_msg);
-										} else {
-											sp = sprintf(listing + sp, "%s", parsed_msg);
-										};
-										channel_page->GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
-										CEdit* msg_box = (CEdit*)channel_page->GetDlgItem(IDC_SOCKMSGS);
-										msg_box->SetSel(0, -1);
-										msg_box->SetSel(-1);
-									};
-								};
-							} catch(...) {
-
-							};
-
-							delete unparsed_msg;
-							delete parsed_msg;
-
+							channel_page->GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
+							CEdit* msg_box = (CEdit*)channel_page->GetDlgItem(IDC_SOCKMSGS);
+							msg_box->SetSel(0, -1);
+							msg_box->SetSel(-1);
 						};
+						delete parsed_msg_list;
 					};
-				};
-				if(pong == "") {
-					if(msg_history_string2 == "Enabled") {
-						if(history_file_stdio.Open(history_file, CFile::modeReadWrite)) {
-							history_file_stdio.Write(listing, strlen(listing));
-							history_file_stdio.Close();
-						} else {
-							if (history_file_stdio.Open(history_file, CFile::modeReadWrite | CFile::modeCreate)) {
-								history_file_stdio.Write(listing, strlen(listing));
-								history_file_stdio.Close();
-							} else {
-							};
-						};
-					};
-					if(parserLib == NULL) {
-						int iTab = m_irc_tabs.GetCurSel();
-						TC_ITEM tci;
-						tci.mask = TCIF_PARAM;
-						m_irc_tabs.GetItem(iTab, &tci);
-						IRCChannelPage* channel_page = (IRCChannelPage *)tci.lParam;
-						channel_page->GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
-						CEdit* msg_box = (CEdit*)channel_page->GetDlgItem(IDC_SOCKMSGS);
-						msg_box->SetSel(0, -1);
-						msg_box->SetSel(-1);
-					};
-					delete parsed_msg_list;
 				};
 	} else if(message == WM_SENDING_SOCKET_MESSAGE) {
 		char *text = (char*)wParam;
@@ -1091,11 +1125,14 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		sprintf(quit_msg, "QUIT :%s\r\n", params.quit_msg);
 		int status = MainWindow::SendSocketMessage(quit_msg);
 	} else if(message == WM_NOTIFYICON && (wParam == IDR_TRAY || wParam == IDR_TRAY_NC)) {
+		if(lParam != 512) {
+			TRACE("LPARAM: [%d]\r\n", lParam);
+		};
 		if(lParam == WM_LBUTTONDBLCLK) {
 			ShowWindow(SW_NORMAL);
 			SetForegroundWindow();
 			SetFocus();
-		} else if(lParam == 517) {
+		} else if(lParam == WM_RBUTTONDBLCLK) {
 			char exe_path[MAX_PATH] = {0};
 			char dll_path[MAX_PATH] = {0};
 			char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
@@ -1309,25 +1346,33 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	return CDialog::WindowProc(message, wParam, lParam);
 }
 
+void MainWindow::FreeMemory() {
+	TRACE("Freeing memory...\r\n");
+	irc_chat_page->DestroyWindow();
+	delete irc_chat_page;
+	for(int ch_array_index = 0; ch_array_index < 1024; ch_array_index++) {
+		irc_channel_page[ch_array_index]->DestroyWindow();
+		delete irc_channel_page[ch_array_index];
+	};
+	if(IsConnected == TRUE) {
+		free(owners_array);
+		free(operators_array);
+		free(members_array);
+	};
+	delete stats_dlg;
+	delete mention_wnd;
+	delete[] channels;
+	delete info_msg_dlg;
+};
+
 BOOL MainWindow::DestroyWindow() 
 {
 	closesocket(sock);
 	WSACleanup();
 	TRACE("Quiting...\r\n");
 	FreeLibrary(parserLib);
-	delete irc_chat_page;
-	for(int ch_array_index = 0; ch_array_index < 1024; ch_array_index++) {
-		delete irc_channel_page[ch_array_index];
-	};
-
-	delete stats_dlg;
-	TRACE("Freeing memory...\r\n");
-	delete parsing_array;
-	delete[] channels;
-	delete info_msg_dlg;
-	delete[] owners_array;
-	delete[] operators_array;
-	delete[] members_array;
+	FreeMemory();
+	IsConnected = FALSE;
 	return CDialog::DestroyWindow();
 }
 
@@ -1482,7 +1527,7 @@ BOOL MainWindow::TrayMessage(DWORD dwMessage)
 
   return Shell_NotifyIcon(dwMessage, &tnd);
 
- }
+}
 
 void MainWindow::OnSelchangeIrcChatTabs(NMHDR* pNMHDR, LRESULT* pResult) 
 {

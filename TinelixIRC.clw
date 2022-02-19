@@ -2,15 +2,15 @@
 
 [General Info]
 Version=1
-LastClass=IRCChannelPage
+LastClass=MentionWindow
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TinelixIRC.h"
 
-ClassCount=11
+ClassCount=12
 Class1=IRCClient
 
-ResourceCount=12
+ResourceCount=13
 Resource2=IDR_MAINMENU
 Resource1=IDR_MAINFRAME
 Class2=MainWindow
@@ -33,6 +33,8 @@ Class10=InfoMessageDialog
 Resource11=IDD_IRCCHATPAGE (English (U.S.))
 Class11=IRCChannelPage
 Resource12=IDD_IRCCHANNELPAGE (English (U.S.))
+Class12=MentionWindow
+Resource13=IDD_MENTIONWND (English (U.S.))
 
 [CLS:IRCClient]
 Type=0
@@ -246,6 +248,23 @@ HeaderFile=IRCChannelPage.h
 ImplementationFile=IRCChannelPage.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IRCChannelPage
+LastObject=IDC_MEMBERS_LIST
+VirtualFilter=dWC
+
+[DLG:IDD_MENTIONWND (English (U.S.))]
+Type=1
+ControlCount=4
+Control1=IDC_OPEN,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_TITLE,static,1342308352
+Control4=IDC_MENTIONED_MSG,static,1342308352
+
+[CLS:MentionWindow]
+Type=0
+HeaderFile=MentionWindow.h
+ImplementationFile=MentionWindow.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=IDC_OPEN
 VirtualFilter=dWC
 
