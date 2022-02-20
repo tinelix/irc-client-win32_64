@@ -93,7 +93,7 @@ LRESULT MentionWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		ShowWindow(SW_SHOW);
 		DWORD winver = GetVersion();
 		if(LOBYTE(LOWORD(winver)) >= 6 && HIBYTE(LOWORD(winver)) >= 1) {
-			SetWindowPos(NULL, screen_width - 302, screen_height - 180, 290, 96, SWP_SHOWWINDOW);
+			SetWindowPos(NULL, screen_width - 302, screen_height - 160, 290, 96, SWP_SHOWWINDOW);
 		} else if(LOBYTE(LOWORD(winver)) >= 4) {
 			SetWindowPos(NULL, screen_width - 302, screen_height - 126, 290, 96, SWP_SHOWWINDOW);
 		} else {

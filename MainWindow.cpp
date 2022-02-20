@@ -132,15 +132,9 @@ BOOL MainWindow::OnInitDialog()
 		WritePrivateProfileString("Main", "ShowInfoMessages", "Enabled", exe_path);
 	};
 
-	//parsing_array = new char*[32768];
-	//for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
-		//parsing_array[array_index] = new char[32768];
-	//};
-
-	parsing_array = (char**)malloc(sizeof(char*) * 32768);
+	parsing_array = new char*[32768];
 	for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
-		parsing_array[array_index] = (char*)malloc(sizeof(char) * 32768);
-		strcpy(parsing_array[array_index], "");
+		parsing_array[array_index] = new char[32768];
 	};
 	
 	TC_ITEM tci;
@@ -848,6 +842,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 									status = send((SOCKET)wParam, nick_msg, strlen(nick_msg), 0);
 									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", "WARNING: We will use next nickname.\r\n");
 								} else if(strcmp(parsing_array[1], "PRIVMSG") == 0) {
+									try {
 										MENTIONED_MSG mentioned_message;
 										CString mentioned_message_text(parsing_array[0]);
 										sprintf(mentioned_message.mentioner, "%s", mentioned_message_text);
@@ -876,7 +871,9 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 										if(mention_index != -1) {
 											mention_wnd->SendMessage(WM_USER_MENTION, NULL, (LPARAM)&mentioned_message);
 										};
+									} catch(...) {
 									};
+								};
 							} catch(...) {
 
 							};
