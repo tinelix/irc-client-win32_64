@@ -404,103 +404,57 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 };
 
 extern "C" __declspec(dllexport) void ParseNamesMessage(char* line, char* array[], char* owners_array[], 
-char* operators_array[], char* members_array[], int owners_count, int operators_count, int members_count, BOOL debug) {					  
+char* operators_array[], char* members_array[], BOOL debug) {					  
 	int owners_index = 0;
 	int operators_index = 0;
 	int members_index = 0;
-	char debug_string[512];
-
-	char* token;
-	char* new_token;
-	//OutputDebugString(line);
-	int array_index = 0;
-	int points_index = 0;
-	int string_index = 0;
-	char tr[32768];
-	char code;
-	char privmsg_code[32768];
-	char join_code[32768];
-	char digit[32];
-	token = strtok(line, " ");
-	array[array_index] = token;
-	//new_token = strtok(line, " ");										   
-	while(token != NULL) {
-		if(token[0] == ':' && array_index < 6) {
-			array[array_index++] = token + 1;
-		} else {
-			array[array_index++] = token;
-		};
-		token = strtok(NULL, " ");
-	};
-
-	for (int index = 5; index < array_index; index++) {
-		if (debug == TRUE) {
-			OutputDebugString("WORD: [");
-			OutputDebugString(array[index]);
-			OutputDebugString("]\r\n");
-			char index_str[40];
-			char length_str[40];
-			sprintf(index_str, "INDEX: %d\r\n", index); 
-			sprintf(length_str, "LENGTH: %d\r\n", array_index); 
-			OutputDebugString(index_str);
-			OutputDebugString(length_str);
-			OutputDebugString("\r\n");
-		};
-		if(array[index] == "\0" || array[index] == NULL || strlen(array[index]) == 0) {
+	for (int index = 5; index < 32768; index++) {
+		if(array[index] == "\0" || array[index] == NULL) {
 			
 		} else if(array[index][0] == ':' && array[index][1] == '~') {
 			if (debug == TRUE) {
-				sprintf(debug_string, "Parsing NAMES messages (if owner): %s\r\n"
-				"INDEX: %d\r\n", array[index], index);
-				OutputDebugString(debug_string);
+				OutputDebugString("Parsing NAMES messages (if owner): ");
+				OutputDebugString(array[index]);
+				OutputDebugString("\r\n");
 			};
 			owners_array[owners_index++] = array[index] + 2;
 		} else if(array[index][0] == ':' && array[index][1] == '@') {
 			if (debug == TRUE) {
-				sprintf(debug_string, "Parsing NAMES messages (if operator): %s\r\n"
-				"INDEX: %d\r\n", array[index], index);
-				OutputDebugString(debug_string);
+				OutputDebugString("Parsing NAMES messages (if operator): ");
+				OutputDebugString(array[index]);
+				OutputDebugString("\r\n");
 			};
 			operators_array[operators_index++] = array[index] + 2;
 		} else if(array[index][0] == '~') {
 			if (debug == TRUE) {
-				sprintf(debug_string, "Parsing NAMES messages (if owner without \":\" mask): %s\r\n"
-				"INDEX: %d\r\n", array[index], index);
-				OutputDebugString(debug_string);
+				OutputDebugString("Parsing NAMES messages (if owner without \":\" mask): ");
+				OutputDebugString(array[index]);
+				OutputDebugString("\r\n");
 			};
 			owners_array[owners_index++] = array[index] + 1;
 		} else if(array[index][0] == '@') {
 			if (debug == TRUE) {
-				sprintf(debug_string, "Parsing NAMES messages (if operator without \":\" mask): %s\r\n"
-				"INDEX: %d\r\n", array[index], index);
-				OutputDebugString(debug_string);
+				OutputDebugString("Parsing NAMES messages (if operator without \":\" mask): ");
+				OutputDebugString(array[index]);
+				OutputDebugString("\r\n");
 			};
 			operators_array[operators_index++] = array[index] + 1;
 		} else if(array[index][0] == ':') {
 			if (debug == TRUE) {
-				sprintf(debug_string, "Parsing NAMES messages (if member): %s\r\n"
-				"INDEX: %d\r\n", array[index], index);
-				OutputDebugString(debug_string);
+				OutputDebugString("Parsing NAMES messages (if member): ");
+				OutputDebugString(array[index]);
+				OutputDebugString("\r\n");
 			};
 			members_array[members_index++] = array[index] + 1;
 		} else {
 			if (debug == TRUE) {
-				sprintf(debug_string, "Parsing NAMES messages (if member without \":\" mask): %s\r\n"
-				"INDEX: %d\r\n", array[index], index);
-				OutputDebugString(debug_string);
+				OutputDebugString("Parsing NAMES messages (if member without \":\" mask): ");
+				OutputDebugString(array[index]);
+				OutputDebugString("\r\n");
 			};
 			members_array[members_index++] = array[index];
 		};
-		owners_count = owners_index;
-		operators_count = operators_index;
-		members_count = members_index;
 	};
-	
-	char parsing_result[32768];
-
-	sprintf(parsing_result, "\r\nOWNERS: %d | OPERATORS: %d | MEMBERS: %d\r\n", owners_index, operators_index, members_index);
-	OutputDebugString(parsing_result);
-
 };
 
 extern "C" __declspec(dllexport) void FreeArray() {

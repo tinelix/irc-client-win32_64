@@ -6,8 +6,6 @@
 
 #define WM_SENDING_SOCKET_MESSAGE 0xAFFE
 #define WM_SENDING_QUIT_MESSAGE 0xAFFB
-#define WM_JOINING_TO_CHANNEL 0xAFEE
-#define WM_LEAVING_CHANNEL 0xAFED
 
 class IRCChatPage : public CDialog
 {

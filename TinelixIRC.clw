@@ -2,21 +2,21 @@
 
 [General Info]
 Version=1
-LastClass=MentionWindow
+LastClass=ConnectionManagerDialog
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TinelixIRC.h"
 
-ClassCount=12
+ClassCount=10
 Class1=IRCClient
 
-ResourceCount=13
+ResourceCount=12
 Resource2=IDR_MAINMENU
 Resource1=IDR_MAINFRAME
 Class2=MainWindow
 Resource3=IDD_STATISTICSDLG (English (U.S.))
 Class3=IRCChatPage
-Resource4=IDD_INFOMSG (English (U.S.))
+Resource4=IDD_IRCCHATPAGE (English (U.S.))
 Resource5=IDD_CONNMAN (English (U.S.))
 Class4=ConnectionManagerDialog
 Class5=EditDialog
@@ -30,11 +30,8 @@ Resource9=IDD_SETTINGSDLG (English (U.S.))
 Class9=ParserSettingsDialog
 Resource10=IDD_PARSER_S (English (U.S.))
 Class10=InfoMessageDialog
-Resource11=IDD_IRCCHATPAGE (English (U.S.))
-Class11=IRCChannelPage
-Resource12=IDD_IRCCHANNELPAGE (English (U.S.))
-Class12=MentionWindow
-Resource13=IDD_MENTIONWND (English (U.S.))
+Resource11=IDD_INFOMSG (English (U.S.))
+Resource12=IDD_MENTIONWND (English (U.S.))
 
 [CLS:IRCClient]
 Type=0
@@ -57,7 +54,7 @@ ImplementationFile=MainWindow.cpp
 BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
-LastObject=IDC_MEMBERS_LIST
+LastObject=MainWindow
 
 [CLS:IRCChatPage]
 Type=0
@@ -65,7 +62,7 @@ HeaderFile=IRCChatPage.h
 ImplementationFile=IRCChatPage.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDC_MEMBERS_LIST
+LastObject=IDC_COMBO1
 VirtualFilter=dWC
 
 [DLG:IDD_IRCCHATPAGE (English (U.S.))]
@@ -234,23 +231,6 @@ Filter=D
 VirtualFilter=dWC
 LastObject=IDOK
 
-[DLG:IDD_IRCCHANNELPAGE (English (U.S.))]
-Type=1
-ControlCount=4
-Control1=IDC_SOCKMSGS,edit,1352730692
-Control2=IDC_MSGTEXT,edit,1484849280
-Control3=IDC_SENDMSG,button,1476460544
-Control4=IDC_MEMBERS_LIST,SysTreeView32,1350631424
-
-[CLS:IRCChannelPage]
-Type=0
-HeaderFile=IRCChannelPage.h
-ImplementationFile=IRCChannelPage.cpp
-BaseClass=CDialog
-Filter=D
-LastObject=IDC_MEMBERS_LIST
-VirtualFilter=dWC
-
 [DLG:IDD_MENTIONWND (English (U.S.))]
 Type=1
 ControlCount=4
@@ -258,13 +238,4 @@ Control1=IDC_OPEN,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_TITLE,static,1342308352
 Control4=IDC_MENTIONED_MSG,static,1342308352
-
-[CLS:MentionWindow]
-Type=0
-HeaderFile=MentionWindow.h
-ImplementationFile=MentionWindow.cpp
-BaseClass=CDialog
-Filter=D
-LastObject=IDC_OPEN
-VirtualFilter=dWC
 

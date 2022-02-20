@@ -4,6 +4,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // ConnectionManagerDialog dialog
 
+#include "InfoMessageDialog.h"
+
 #define WM_CLOSE_INFOMSG 0xAFEF
 
 class ConnectionManagerDialog : public CDialog

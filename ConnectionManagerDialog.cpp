@@ -29,6 +29,9 @@ struct PARAMETERS
 	BOOL hide_ip;
 };
 
+InfoMessageDialog* info_msg_dlg;
+
+
 ConnectionManagerDialog::ConnectionManagerDialog(CWnd* pParent /*=NULL*/)
 	: CDialog(ConnectionManagerDialog::IDD, pParent)
 {
@@ -85,8 +88,8 @@ BOOL ConnectionManagerDialog::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	MainWindow* mainwin_2 = (MainWindow*)GetParent();
-	mainwin_2->info_msg_dlg->Create(InfoMessageDialog::IDD, this);
+	info_msg_dlg = new InfoMessageDialog;
+	info_msg_dlg->Create(InfoMessageDialog::IDD, this);
 	
 	char exe_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
@@ -207,7 +210,6 @@ void ConnectionManagerDialog::OnAddProfileBtn()
 	char exe_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	char settings[32768] = {0};
-	MainWindow* mainwin_2 = (MainWindow*)GetParent();
 	CListBox *profiles_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
 	int selindex = profiles_cb->GetCurSel();
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
@@ -222,7 +224,7 @@ void ConnectionManagerDialog::OnAddProfileBtn()
 	GetPrivateProfileString("Main", "ShowInfoMessages", "", show_infomsg, 12, exe_path);
 	CString lng_selitemtext_2(language_string);
 
-	mainwin_2->info_msg_dlg->SetInfoMessageCode(1);
+	info_msg_dlg->SetInfoMessageCode(1);
 
 	if(strcmp(show_infomsg, "Enabled") == 0 && lng_selitemtext_2 == "Russian") {
 		sprintf(instruction_txt, "Для начала рассмотрите, для чего нужны следующие параметры:\r\n\r\n"
@@ -232,10 +234,10 @@ void ConnectionManagerDialog::OnAddProfileBtn()
 			"Port - порт сервера,\r\nQuitMessage - сообщение при выходе из сервера,\r\n"
 			"HideIP - режим маскировки IP-адреса\r\n\r\nЗначения: Enabled - включен, Disabled - выключен.\r\n\r\n"
 			"Нажмите \"OK\" для открытия текстового редактора.");
-		mainwin_2->info_msg_dlg->GetDlgItem(IDC_INFOMSG_TEXT)->SetWindowText(instruction_txt);
-		mainwin_2->info_msg_dlg->SetWindowText("Инструкция");
-		mainwin_2->info_msg_dlg->CenterWindow();
-		mainwin_2->info_msg_dlg->ShowWindow(SW_SHOW);
+		info_msg_dlg->GetDlgItem(IDC_INFOMSG_TEXT)->SetWindowText(instruction_txt);
+		info_msg_dlg->SetWindowText("Инструкция");
+		info_msg_dlg->CenterWindow();
+		info_msg_dlg->ShowWindow(SW_SHOW);
 	} else {
 		SendMessage(WM_CLOSE_INFOMSG, NULL, NULL);
 	};
@@ -400,7 +402,7 @@ void ConnectionManagerDialog::OnOK()
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, settings_path, MAX_PATH);
-	*(strrchr(settings_path, '\\')+1)='\0';
+	*(strrchr(exe_path, '\\')+1)='\0';
 	strcat(settings_path, "\\settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
 		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION);

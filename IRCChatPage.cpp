@@ -178,7 +178,6 @@ void IRCChatPage::OnSendmsg()
             char join_msg[1024] = {0};
             sprintf(join_msg, "JOIN %s\r\n", spaces_splitter[1]);
             sprintf(channel, "%s", spaces_splitter[1]);
-			AfxGetMainWnd()->SendMessage(WM_JOINING_TO_CHANNEL, (WPARAM)channel, (LPARAM)channel);
             AfxGetMainWnd()->SendMessage(WM_SENDING_SOCKET_MESSAGE, (WPARAM)join_msg, (LPARAM)join_msg);
         } else {
 			if(language_string_2 == "Russian") {
@@ -295,7 +294,7 @@ void IRCChatPage::OnSendmsg()
 		char cmd_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
-			msg_index = sprintf(cmd_msg, "PRIVMSG %s", spaces_splitter[1]);
+			msg_index = sprintf(cmd_msg, "PRIVMSG :%s", spaces_splitter[1]);
 			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
 				if(i == spaces_splitter.GetSize() - 1) {
 					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
@@ -309,7 +308,7 @@ void IRCChatPage::OnSendmsg()
 		char cmd_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
-			msg_index = sprintf(cmd_msg, "PRIVMSG %s", spaces_splitter[1]);
+			msg_index = sprintf(cmd_msg, "PRIVMSG :%s", spaces_splitter[1]);
 			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
 				if(i == spaces_splitter.GetSize() - 1) {
 					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
@@ -361,6 +360,7 @@ void IRCChatPage::OnOK()
 void IRCChatPage::OnCancel()
 {
 	//CDialog::OnCancel();
+	TRACE("ESC");
 };
 
 BOOL IRCChatPage::OnInitDialog() 
