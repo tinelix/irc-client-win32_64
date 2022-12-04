@@ -1,9 +1,8 @@
-// MainWindow.h : header file
-//
+#define MAINWND_H
 
-/////////////////////////////////////////////////////////////////////////////
-// MainWindow dialog
+#include <windows.h>
 
+<<<<<<< Updated upstream
 #define WM_SOCKET_MESSAGE 0xAFFF
 #define WM_SENDING_SOCKET_MESSAGE 0xAFFE
 #define WM_CHANGING_MSGFONT 0xAFFD
@@ -112,3 +111,8 @@ friend class StatisticsDialog;
 friend class SettingsDialog;
 friend class ConnectionManagerDialog;
 };
+=======
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+
+>>>>>>> Stashed changes
