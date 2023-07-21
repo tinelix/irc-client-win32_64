@@ -18,8 +18,6 @@ HINSTANCE hInst;                                // текущий экземпл
 // Отправить объявления функций, включенных в этот модуль кода:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 HWND                InitInstance(HINSTANCE, int);
-LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -29,6 +27,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
+    hInst = hInstance;
+
     HWND hWnd_dummy;
     HWND hWnd;
 
@@ -37,15 +37,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Инициализация глобальных строк
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_TINELIXIRC, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+    MainWindow* mainWnd = new MainWindow();
 
     // Выполнить инициализацию приложения:
-    hWnd = InitInstance(hInstance, nCmdShow);
+    hWnd = mainWnd->InitInstance(hInstance, nCmdShow);
     if (!(hWnd_dummy = hWnd)) {
 
     } else {
-        ShowWindow(hWnd, nCmdShow);
-        UpdateWindow(hWnd);
+        mainWnd->ShowDialog();
     };
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_TINELIXIRC));
@@ -53,7 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 
     // Цикл основного сообщения:
-    while (GetMessage(&msg, nullptr, 0, 0))
+    while (GetMessage(&msg, NULL, 0, 0))
     {
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
         {
