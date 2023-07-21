@@ -41,7 +41,7 @@ HWND InitInstance(HINSTANCE hInstance, int nCmdShow)
         HMENU hSysMenu = GetSystemMenu(hWnd, FALSE);
         InsertMenu(hSysMenu, 5, MF_BYPOSITION, IDM_ABOUT, TEXT("About..."));
         InsertMenu(hSysMenu, 5, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
-        SetWindowText(hWnd, szTitle);
+        SetWindowText(hWnd, szWindowClass);
         HWND tabctrl = GetDlgItem(hWnd, IDC_THREADTABS);
         TCITEM tci = { 0 };
         tci.mask = TCIF_TEXT;
