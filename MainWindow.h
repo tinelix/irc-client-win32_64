@@ -11,6 +11,7 @@ protected:
 public:
 	MainWindow();
 	virtual ~MainWindow();
+	HWND GetHwnd();
 	HWND InitInstance(HINSTANCE hInstance, int nCmdShow);
 	bool ShowDialog();
 };

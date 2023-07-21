@@ -13,8 +13,6 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 WCHAR szTitle[256];                  // “екст строки заголовка
 WCHAR szWindowClass[256];            // им€ класса главного окна
 
-HINSTANCE hInstance;
-
 MainWindow::MainWindow()
 {
     WNDCLASSEXW wcex = { 0 };
@@ -25,8 +23,8 @@ MainWindow::MainWindow()
     wcex.lpfnWndProc = WndProcCallback;
     wcex.cbClsExtra = 0;
     wcex.cbWndExtra = 0;
-    wcex.hInstance = hInstance;
-    wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_TINELIXIRC));
+    wcex.hInstance = hInst;
+    wcex.hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_TINELIXIRC));
     wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_TINELIXIRC);
@@ -34,15 +32,16 @@ MainWindow::MainWindow()
     wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     ::RegisterClassExW(&wcex);
-    m_hwnd = NULL;
-    ::CreateWindowEx(0, L"MainWindow", L"", WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_CHILD, 
-        120, 120, 120, 120, 0, 0, hInstance, this);
 }
 
 MainWindow::~MainWindow()
 {
     if (m_hwnd)
         DestroyWindow(m_hwnd);
+}
+
+HWND MainWindow::GetHwnd() {
+    return m_hwnd;
 }
 
 HWND MainWindow::InitInstance(HINSTANCE hInstance, int nCmdShow)
