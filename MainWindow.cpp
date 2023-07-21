@@ -13,7 +13,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 WCHAR szTitle[256];                  // Текст строки заголовка
 WCHAR szWindowClass[256];            // имя класса главного окна
 
-MainWindow::MainWindow()
+MainWindow::MainWindow(HINSTANCE hInst)
 {
     WNDCLASSEXW wcex = { 0 };
 
@@ -46,7 +46,7 @@ HWND MainWindow::GetHwnd() {
 
 HWND MainWindow::InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-    hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
+    hInst = hInstance;
 
     HWND hWnd = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_MAINWINDOW), NULL, NULL);
 

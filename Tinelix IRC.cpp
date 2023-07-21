@@ -37,7 +37,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Инициализация глобальных строк
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_TINELIXIRC, szWindowClass, MAX_LOADSTRING);
-    MainWindow* mainWnd = new MainWindow();
+    MainWindow* mainWnd = new MainWindow(hInstance);
 
     // Выполнить инициализацию приложения:
     hWnd = mainWnd->InitInstance(hInstance, nCmdShow);
